@@ -35,4 +35,7 @@ public class DocenteEntity {
     @OneToMany(mappedBy = "docente", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private List<AsignacionHorarioEntity> asignaciones = new ArrayList<>();
 
+    @OneToMany(mappedBy = "docente", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    private List<RestriccionDocente> restricciones = new ArrayList<>();
+
 }
