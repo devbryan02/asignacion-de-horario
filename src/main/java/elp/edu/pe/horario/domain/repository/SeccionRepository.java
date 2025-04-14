@@ -1,9 +1,13 @@
 package elp.edu.pe.horario.domain.repository;
 
-import elp.edu.pe.horario.domain.entity.SeccionEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import elp.edu.pe.horario.domain.model.Seccion;
 
-import java.util.UUID;
+import java.util.List;
 
-public interface SeccionRepository extends JpaRepository<SeccionEntity, UUID> {
+public interface SeccionRepository {
+
+    List<Seccion> findAll();
+    Seccion save(Seccion seccion);
+    Seccion findById(Long id);
+    void deleteById(Long id);
 }

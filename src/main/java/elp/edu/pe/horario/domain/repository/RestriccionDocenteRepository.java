@@ -1,9 +1,14 @@
 package elp.edu.pe.horario.domain.repository;
 
-import elp.edu.pe.horario.domain.entity.RestriccionDocente;
-import org.springframework.data.jpa.repository.JpaRepository;
+import elp.edu.pe.horario.domain.model.RestriccionDocente;
 
-import java.util.UUID;
+import java.util.List;
 
-public interface RestriccionDocenteRepository extends JpaRepository<RestriccionDocente, UUID> {
+public interface RestriccionDocenteRepository {
+
+    List<RestriccionDocente> findAll();
+    RestriccionDocente save(RestriccionDocente restriccionDocente);
+    RestriccionDocente findById(Long id);
+    void deleteById(Long id);
+
 }

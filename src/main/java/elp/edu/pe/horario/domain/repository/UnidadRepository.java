@@ -1,9 +1,14 @@
 package elp.edu.pe.horario.domain.repository;
 
-import elp.edu.pe.horario.domain.entity.UnidadEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import elp.edu.pe.horario.domain.model.UnidadAcademica;
 
-import java.util.UUID;
+import java.util.List;
+import java.util.Optional;
 
-public interface UnidadRepository extends JpaRepository<UnidadEntity, UUID> {
+public interface UnidadRepository {
+
+    List<UnidadAcademica> findAll();
+    Optional<UnidadAcademica> findById(Long id);
+    UnidadAcademica save(UnidadAcademica unidad);
+    void deleteById(Long id);
 }

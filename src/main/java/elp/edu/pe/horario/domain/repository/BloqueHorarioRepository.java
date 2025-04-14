@@ -1,9 +1,18 @@
 package elp.edu.pe.horario.domain.repository;
 
-import elp.edu.pe.horario.domain.entity.BloqueHorarioEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import elp.edu.pe.horario.domain.model.BloqueHorario;
 
-import java.util.UUID;
+import java.util.List;
 
-public interface BloqueHorarioRepository extends JpaRepository<BloqueHorarioEntity, UUID> {
+public interface BloqueHorarioRepository {
+
+    BloqueHorario save(BloqueHorario bloqueHorarioEntity);
+
+    BloqueHorario findById(Long id);
+
+    void deleteById(Long id);
+
+    List<BloqueHorario> findAll();
+
+    List<BloqueHorario> findByAsignacionId(Long asignacionId);
 }
