@@ -2,40 +2,47 @@ package elp.edu.pe.horario.infrastructure.persistence.repository;
 
 import elp.edu.pe.horario.domain.model.BloqueHorario;
 import elp.edu.pe.horario.domain.repository.BloqueHorarioRepository;
+import elp.edu.pe.horario.infrastructure.mapper.BloqueHorarioMapper;
+import elp.edu.pe.horario.infrastructure.persistence.entity.BloqueHorarioEntity;
 import elp.edu.pe.horario.infrastructure.persistence.jpa.BloqueHorarioJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
 public class BloqueHorarioRepositoryImpl implements BloqueHorarioRepository {
 
     private final BloqueHorarioJpaRepository jpaRepository;
+    private final BloqueHorarioMapper mapper;
 
     @Override
     public BloqueHorario save(BloqueHorario bloqueHorarioEntity) {
-        return null;
+        BloqueHorarioEntity entity = mapper.toEntity(bloqueHorarioEntity);
+        BloqueHorarioEntity saved = jpaRepository.save(entity);
+        return mapper.toDomain(saved);
     }
 
     @Override
-    public BloqueHorario findById(Long id) {
-        return null;
+    public Optional<BloqueHorario> findById(UUID id) {
+        return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
-    public void deleteById(Long id) {
-
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
     }
 
     @Override
     public List<BloqueHorario> findAll() {
-        return List.of();
+        return jpaRepository.findAll()
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 
-    @Override
-    public List<BloqueHorario> findByAsignacionId(Long asignacionId) {
-        return List.of();
-    }
+
 }

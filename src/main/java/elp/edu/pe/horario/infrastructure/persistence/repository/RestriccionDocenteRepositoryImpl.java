@@ -2,36 +2,48 @@ package elp.edu.pe.horario.infrastructure.persistence.repository;
 
 import elp.edu.pe.horario.domain.model.RestriccionDocente;
 import elp.edu.pe.horario.domain.repository.RestriccionDocenteRepository;
+import elp.edu.pe.horario.infrastructure.mapper.RestriccionDocenteMapper;
+import elp.edu.pe.horario.infrastructure.persistence.entity.RestriccionDocenteEntity;
 import elp.edu.pe.horario.infrastructure.persistence.jpa.RestriccionDocenteJpaRepository;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class RestriccionDocenteRepositoryImpl implements RestriccionDocenteRepository {
 
-    private final RestriccionDocenteJpaRepository restriccionDocenteJpaRepository;
+    private final RestriccionDocenteJpaRepository jpaRepository;
+    private final RestriccionDocenteMapper mapper;
 
-    public RestriccionDocenteRepositoryImpl(RestriccionDocenteJpaRepository restriccionDocenteJpaRepository) {
-        this.restriccionDocenteJpaRepository = restriccionDocenteJpaRepository;
+    public RestriccionDocenteRepositoryImpl(RestriccionDocenteJpaRepository jpaRepository, RestriccionDocenteMapper mapper) {
+        this.jpaRepository = jpaRepository;
+        this.mapper = mapper;
     }
 
     @Override
     public List<RestriccionDocente> findAll() {
-        return List.of();
+        return jpaRepository.findAll()
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 
     @Override
     public RestriccionDocente save(RestriccionDocente restriccionDocente) {
-        return null;
+        RestriccionDocenteEntity entity = mapper.toEntity(restriccionDocente);
+        RestriccionDocenteEntity savedEntity = jpaRepository.save(entity);
+        return mapper.toDomain(savedEntity);
     }
 
     @Override
-    public RestriccionDocente findById(Long id) {
-        return null;
+    public Optional<RestriccionDocente> findById(UUID id) {
+        return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
-    public void deleteById(Long id) {
-
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
     }
 }

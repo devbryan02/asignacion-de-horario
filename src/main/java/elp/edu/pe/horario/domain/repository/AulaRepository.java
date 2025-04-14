@@ -3,12 +3,14 @@ package elp.edu.pe.horario.domain.repository;
 import elp.edu.pe.horario.domain.model.Aula;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface AulaRepository {
 
-    Aula findById(Long id);
+    Optional<Aula> findById(UUID id);
     List<Aula> findAll();
     Aula save(Aula aula);
-    void deleteById(Long id);
+    void deleteById(UUID id);
 
 }

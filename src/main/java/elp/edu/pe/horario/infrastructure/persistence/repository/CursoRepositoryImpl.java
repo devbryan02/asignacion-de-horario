@@ -2,36 +2,48 @@ package elp.edu.pe.horario.infrastructure.persistence.repository;
 
 import elp.edu.pe.horario.domain.model.Curso;
 import elp.edu.pe.horario.domain.repository.CursoRepository;
+import elp.edu.pe.horario.infrastructure.mapper.CursoMapper;
+import elp.edu.pe.horario.infrastructure.persistence.entity.CursoEntity;
 import elp.edu.pe.horario.infrastructure.persistence.jpa.CursoJpaRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-@RequiredArgsConstructor
 public class CursoRepositoryImpl implements CursoRepository {
 
-    private final CursoJpaRepository cursoJpaRepository;
+    private final CursoJpaRepository jpaRepository;
+    private final CursoMapper mapper;
 
-    @Override
-    public List<Curso> findAll() {
-        return List.of();
+    public CursoRepositoryImpl(CursoJpaRepository jpaRepository, CursoMapper mapper) {
+        this.jpaRepository = jpaRepository;
+        this.mapper = mapper;
     }
 
     @Override
-    public Optional<Curso> findById(Long id) {
-        return Optional.empty();
+    public List<Curso> findAll() {
+        return jpaRepository.findAll()
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public Optional<Curso> findById(UUID id) {
+        return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public Curso save(Curso curso) {
-        return null;
+        CursoEntity entity = mapper.toEntity(curso);
+        CursoEntity saved = jpaRepository.save(entity);
+        return mapper.toDomain(saved);
     }
 
     @Override
-    public void deleteById(Long id) {
-
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
     }
 }

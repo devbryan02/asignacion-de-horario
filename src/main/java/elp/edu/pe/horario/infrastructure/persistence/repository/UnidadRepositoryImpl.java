@@ -2,38 +2,47 @@ package elp.edu.pe.horario.infrastructure.persistence.repository;
 
 import elp.edu.pe.horario.domain.model.UnidadAcademica;
 import elp.edu.pe.horario.domain.repository.UnidadRepository;
+import elp.edu.pe.horario.infrastructure.mapper.UnidadMapper;
+import elp.edu.pe.horario.infrastructure.persistence.entity.UnidadEntity;
 import elp.edu.pe.horario.infrastructure.persistence.jpa.UnidadJpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class UnidadRepositoryImpl implements UnidadRepository {
 
-    private final UnidadJpaRepository unidadJpaRepository;
+    private final UnidadJpaRepository jpaRepository;
+    private final UnidadMapper mapper;
 
-    public UnidadRepositoryImpl(UnidadJpaRepository unidadJpaRepository) {
-        this.unidadJpaRepository = unidadJpaRepository;
+    public UnidadRepositoryImpl(UnidadJpaRepository jpaRepository, UnidadMapper mapper) {
+        this.jpaRepository = jpaRepository;
+        this.mapper = mapper;
     }
 
     @Override
     public List<UnidadAcademica> findAll() {
-        return List.of();
+        return jpaRepository.findAll()
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 
     @Override
-    public Optional<UnidadAcademica> findById(Long id) {
-        return Optional.empty();
+    public Optional<UnidadAcademica> findById(UUID id) {
+        return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public UnidadAcademica save(UnidadAcademica unidad) {
-        return null;
+        UnidadEntity entity = mapper.toEntity(unidad);
+        UnidadEntity savedEntity = jpaRepository.save(entity);
+        return mapper.toDomain(savedEntity);
     }
 
     @Override
-    public void deleteById(Long id) {
-
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
     }
 }

@@ -5,11 +5,11 @@ import elp.edu.pe.horario.infrastructure.persistence.entity.RestriccionDocenteEn
 import org.springframework.stereotype.Component;
 
 @Component
-public class RestricionDocenteMapper {
+public class RestriccionDocenteMapper {
 
     private final DocenteMapper docenteMapper;
 
-    public RestricionDocenteMapper(DocenteMapper docenteMapper) {
+    public RestriccionDocenteMapper(DocenteMapper docenteMapper) {
         this.docenteMapper = docenteMapper;
     }
 
