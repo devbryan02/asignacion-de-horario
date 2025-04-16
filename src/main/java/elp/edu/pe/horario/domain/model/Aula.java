@@ -1,5 +1,7 @@
 package elp.edu.pe.horario.domain.model;
 
+import elp.edu.pe.horario.domain.enums.TipoAula;
+
 import java.util.UUID;
 
 public class Aula {
@@ -7,9 +9,9 @@ public class Aula {
     private UUID id;
     private String nombre;
     private Integer capacidad;
-    private String tipo;
+    private TipoAula tipo;
 
-    public Aula(UUID id, String nombre, Integer capacidad, String tipo) {
+    public Aula(UUID id, String nombre, Integer capacidad, TipoAula tipo) {
         this.id = id;
         this.nombre = nombre;
         this.capacidad = capacidad;
@@ -40,11 +42,11 @@ public class Aula {
         this.capacidad = capacidad;
     }
 
-    public String getTipo() {
+    public TipoAula getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(TipoAula tipo) {
         this.tipo = tipo;
     }
 }

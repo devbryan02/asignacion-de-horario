@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.infrastructure.persistence.entity;
 
+import elp.edu.pe.horario.domain.enums.TipoAula;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class AulaEntity {
     private UUID id;
     private String nombre;
     private Integer capacidad;
-    private String tipo;
+    private TipoAula tipo;
 
     @OneToMany(mappedBy = "aula", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private List<AsignacionHorarioEntity> asignaciones = new ArrayList<>();

@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.infrastructure.persistence.entity;
 
+import elp.edu.pe.horario.domain.enums.DiaSemana;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +22,7 @@ public class BloqueHorarioEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private Integer diaSemana;
+    private DiaSemana diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;
     private String Turno;

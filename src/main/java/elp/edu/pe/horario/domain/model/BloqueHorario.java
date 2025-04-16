@@ -1,23 +1,19 @@
 package elp.edu.pe.horario.domain.model;
 
+import elp.edu.pe.horario.domain.enums.DiaSemana;
+
 import java.time.LocalTime;
 import java.util.UUID;
 
 public class BloqueHorario {
 
     private UUID id;
-    private Integer diaSemana;
+    private DiaSemana diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;
     private String Turno;
 
-    public BloqueHorario(
-            UUID id,
-            Integer diaSemana,
-            LocalTime horaInicio,
-            LocalTime horaFin,
-            String turno
-    ) {
+    public BloqueHorario(UUID id, DiaSemana diaSemana, LocalTime horaInicio, LocalTime horaFin, String turno) {
         this.id = id;
         this.diaSemana = diaSemana;
         this.horaInicio = horaInicio;
@@ -33,11 +29,11 @@ public class BloqueHorario {
         this.id = id;
     }
 
-    public Integer getDiaSemana() {
+    public DiaSemana getDiaSemana() {
         return diaSemana;
     }
 
-    public void setDiaSemana(Integer diaSemana) {
+    public void setDiaSemana(DiaSemana diaSemana) {
         this.diaSemana = diaSemana;
     }
 
