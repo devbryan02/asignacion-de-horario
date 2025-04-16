@@ -1,10 +1,12 @@
 package elp.edu.pe.horario.application.dto.request;
 
-import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 
 public record PeriodoRequest(
-    UUID id,
     String nombre,
-    String fechaInicio,
-    String fechaFin
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    LocalDate fechaInicio,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    LocalDate fechaFin
 ) { }
