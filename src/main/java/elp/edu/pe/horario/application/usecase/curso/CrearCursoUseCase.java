@@ -1,0 +1,43 @@
+package elp.edu.pe.horario.application.usecase.curso;
+
+import elp.edu.pe.horario.application.dto.request.CursoRequest;
+import elp.edu.pe.horario.application.dto.response.RegistroResponse;
+import elp.edu.pe.horario.application.mapper.CursoDtoMapper;
+import elp.edu.pe.horario.domain.model.Curso;
+import elp.edu.pe.horario.domain.model.UnidadAcademica;
+import elp.edu.pe.horario.infrastructure.persistence.repository.CursoRepositoryImpl;
+import elp.edu.pe.horario.infrastructure.persistence.repository.UnidadRepositoryImpl;
+import elp.edu.pe.horario.shared.exception.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class CrearCursoUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(CrearCursoUseCase.class);
+    private final CursoRepositoryImpl cursoRepository;
+    private final CursoDtoMapper cursoDtoMapper;
+    private final UnidadRepositoryImpl unidadRepository;
+
+    public CrearCursoUseCase(CursoRepositoryImpl cursoRepository, CursoDtoMapper cursoDtoMapper, UnidadRepositoryImpl unidadRepository) {
+        this.cursoRepository = cursoRepository;
+        this.cursoDtoMapper = cursoDtoMapper;
+        this.unidadRepository = unidadRepository;
+    }
+
+    public RegistroResponse ejecutar(CursoRequest request) {
+        try{
+            Optional<UnidadAcademica> unidadAcademica = unidadRepository.findById(request.unidadId());
+            if(unidadAcademica.isEmpty()) throw new NotFoundException("Unidad Academica no encontrada");
+            Curso curso = cursoDtoMapper.toDomain(request, unidadAcademica.get());
+            cursoRepository.save(curso);
+            return RegistroResponse.success("Curso creado correctamente");
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return RegistroResponse.failure("Error al crear el curso");
+        }
+    }
+}

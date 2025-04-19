@@ -7,6 +7,5 @@ import java.util.UUID;
 
 public interface SeccionJpaRepository extends JpaRepository<SeccionEntity, UUID> {
 
-    SeccionEntity findByNombre(String nombre);
-    SeccionEntity findByNombreAndIdNot(String nombre, UUID id);
+
 }

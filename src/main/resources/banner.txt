@@ -1,0 +1,5 @@
+ +-+-+-+-+-+-+-+-+-+-+
+ |E|L|P|.|E|D|U|.|P|E|
+ +-+-+-+-+-+-+-+-+-+-+
+${application.title} ${application.version}
+Powered by bryacmy ${spring-boot.version}

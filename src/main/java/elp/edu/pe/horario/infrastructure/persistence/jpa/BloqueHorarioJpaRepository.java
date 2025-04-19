@@ -7,5 +7,4 @@ import java.util.UUID;
 
 public interface BloqueHorarioJpaRepository extends JpaRepository<BloqueHorarioEntity, UUID> {
 
-    //consultas perzonalizadas
 }

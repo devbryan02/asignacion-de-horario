@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface RestriccionDocenteJpaRepository extends JpaRepository<RestriccionDocenteEntity, UUID> {
 
     // Consultas personalizadas pueden ser añadidas aquí
+
 }

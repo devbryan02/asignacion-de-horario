@@ -16,12 +16,4 @@ public class AulaDtoMapper {
                 TipoAula.valueOf(request.tipo())
         );
     }
-
-    public AulaRequest toRequest(Aula aula){
-        return new AulaRequest(
-                aula.getNombre(),
-                aula.getCapacidad(),
-                aula.getTipo().name()
-        );
-    }
 }

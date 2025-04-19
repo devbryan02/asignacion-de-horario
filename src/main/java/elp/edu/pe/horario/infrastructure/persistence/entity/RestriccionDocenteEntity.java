@@ -21,10 +21,13 @@ public class RestriccionDocenteEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Enumerated(EnumType.STRING)
     private DiaSemana diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;
+    @Enumerated(EnumType.STRING)
     private TipoRestriccion tipoRestriccion;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "docente_id", nullable = false)
     private DocenteEntity docente;

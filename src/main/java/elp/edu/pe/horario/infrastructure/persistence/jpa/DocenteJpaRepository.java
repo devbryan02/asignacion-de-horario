@@ -7,7 +7,5 @@ import java.util.UUID;
 
 public interface DocenteJpaRepository extends JpaRepository<DocenteEntity, UUID> {
 
-    DocenteEntity findByIdDocente(UUID idDocente);
-    DocenteEntity findByIdDocenteAndEstado(UUID idDocente, String estado);
 
 }

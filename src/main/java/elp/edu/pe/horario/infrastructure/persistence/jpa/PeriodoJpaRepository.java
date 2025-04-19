@@ -7,6 +7,4 @@ import java.util.UUID;
 
 public interface PeriodoJpaRepository extends JpaRepository<PeriodoEntity, UUID> {
 
-    PeriodoEntity findByIdAndEstado(UUID id, Boolean estado);
-
 }

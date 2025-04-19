@@ -7,5 +7,4 @@ import java.util.UUID;
 
 public interface AsignacionHorarioJpaRepository extends JpaRepository<AsignacionHorarioEntity, UUID> {
 
-    boolean existBy(UUID id);
 }

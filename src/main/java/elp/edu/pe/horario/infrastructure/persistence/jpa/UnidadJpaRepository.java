@@ -7,7 +7,4 @@ import java.util.UUID;
 
 public interface UnidadJpaRepository extends JpaRepository<UnidadEntity, UUID> {
 
-    UnidadEntity findByNombre(String nombre);
-    UnidadEntity findBySigla(String sigla);
-
 }

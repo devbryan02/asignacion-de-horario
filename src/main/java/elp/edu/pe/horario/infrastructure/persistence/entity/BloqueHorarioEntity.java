@@ -22,6 +22,7 @@ public class BloqueHorarioEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Enumerated(EnumType.STRING)
     private DiaSemana diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;

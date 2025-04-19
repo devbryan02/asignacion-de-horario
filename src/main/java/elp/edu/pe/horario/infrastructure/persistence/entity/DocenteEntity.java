@@ -21,7 +21,7 @@ public class DocenteEntity {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String nombre;
-    private Integer horasContradadas;
+    private Integer horasContratadas;
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(

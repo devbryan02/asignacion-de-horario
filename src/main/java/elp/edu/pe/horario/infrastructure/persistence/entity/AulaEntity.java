@@ -23,6 +23,7 @@ public class AulaEntity {
     private UUID id;
     private String nombre;
     private Integer capacidad;
+    @Enumerated(EnumType.STRING)
     private TipoAula tipo;
 
     @OneToMany(mappedBy = "aula", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)

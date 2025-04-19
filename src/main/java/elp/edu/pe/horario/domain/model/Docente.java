@@ -6,12 +6,12 @@ public class Docente {
 
     private UUID id;
     private String nombre;
-    private Integer horasContradadas;
+    private Integer horasContratadas;
 
-    public Docente(UUID id, String nombre, Integer horasContradadas) {
+    public Docente(UUID id, String nombre, Integer horasContratadas) {
         this.id = id;
         this.nombre = nombre;
-        this.horasContradadas = horasContradadas;
+        this.horasContratadas = horasContratadas;
     }
 
     public UUID getId() {
@@ -30,11 +30,11 @@ public class Docente {
         this.nombre = nombre;
     }
 
-    public Integer getHorasContradadas() {
-        return horasContradadas;
+    public Integer getHorasContratadas() {
+        return horasContratadas;
     }
 
-    public void setHorasContradadas(Integer horasContradadas) {
-        this.horasContradadas = horasContradadas;
+    public void setHorasContratadas(Integer horasContratadas) {
+        this.horasContratadas = horasContratadas;
     }
 }
