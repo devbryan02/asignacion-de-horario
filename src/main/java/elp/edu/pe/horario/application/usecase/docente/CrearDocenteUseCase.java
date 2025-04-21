@@ -4,7 +4,7 @@ import elp.edu.pe.horario.application.dto.request.DocenteRequest;
 import elp.edu.pe.horario.application.dto.response.RegistroResponse;
 import elp.edu.pe.horario.application.mapper.DocenteDtoMapper;
 import elp.edu.pe.horario.domain.model.Docente;
-import elp.edu.pe.horario.infrastructure.persistence.repository.DocenteRepositoryImpl;
+import elp.edu.pe.horario.domain.repository.DocenteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 public class CrearDocenteUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(CrearDocenteUseCase.class);
-    private final DocenteRepositoryImpl docenteRepository;
+    private final DocenteRepository docenteRepository;
     private final DocenteDtoMapper mapper;
 
-    public CrearDocenteUseCase(DocenteRepositoryImpl docenteRepository, DocenteDtoMapper mapper) {
+    public CrearDocenteUseCase(DocenteRepository docenteRepository, DocenteDtoMapper mapper) {
         this.docenteRepository = docenteRepository;
         this.mapper = mapper;
     }

@@ -5,8 +5,8 @@ import elp.edu.pe.horario.application.dto.response.RegistroResponse;
 import elp.edu.pe.horario.application.mapper.CursoDtoMapper;
 import elp.edu.pe.horario.domain.model.Curso;
 import elp.edu.pe.horario.domain.model.UnidadAcademica;
-import elp.edu.pe.horario.infrastructure.persistence.repository.CursoRepositoryImpl;
-import elp.edu.pe.horario.infrastructure.persistence.repository.UnidadRepositoryImpl;
+import elp.edu.pe.horario.domain.repository.CursoRepository;
+import elp.edu.pe.horario.domain.repository.UnidadRepository;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +18,11 @@ import java.util.Optional;
 public class CrearCursoUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(CrearCursoUseCase.class);
-    private final CursoRepositoryImpl cursoRepository;
+    private final CursoRepository cursoRepository;
     private final CursoDtoMapper cursoDtoMapper;
-    private final UnidadRepositoryImpl unidadRepository;
+    private final UnidadRepository unidadRepository;
 
-    public CrearCursoUseCase(CursoRepositoryImpl cursoRepository, CursoDtoMapper cursoDtoMapper, UnidadRepositoryImpl unidadRepository) {
+    public CrearCursoUseCase(CursoRepository cursoRepository, CursoDtoMapper cursoDtoMapper, UnidadRepository unidadRepository) {
         this.cursoRepository = cursoRepository;
         this.cursoDtoMapper = cursoDtoMapper;
         this.unidadRepository = unidadRepository;
