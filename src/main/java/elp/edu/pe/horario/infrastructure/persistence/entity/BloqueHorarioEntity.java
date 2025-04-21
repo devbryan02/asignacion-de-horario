@@ -1,6 +1,7 @@
 package elp.edu.pe.horario.infrastructure.persistence.entity;
 
 import elp.edu.pe.horario.domain.enums.DiaSemana;
+import elp.edu.pe.horario.domain.enums.Turno;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +27,8 @@ public class BloqueHorarioEntity {
     private DiaSemana diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;
-    private String Turno;
+    @Enumerated(EnumType.STRING)
+    private Turno turno;
 
     @OneToMany(mappedBy = "bloqueHorario", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private List<AsignacionHorarioEntity> asignaciones = new ArrayList<>();

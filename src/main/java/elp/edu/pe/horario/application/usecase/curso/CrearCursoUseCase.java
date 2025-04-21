@@ -30,10 +30,14 @@ public class CrearCursoUseCase {
 
     public RegistroResponse ejecutar(CursoRequest request) {
         try{
-            Optional<UnidadAcademica> unidadAcademica = unidadRepository.findById(request.unidadId());
-            if(unidadAcademica.isEmpty()) throw new NotFoundException("Unidad Academica no encontrada");
-            Curso curso = cursoDtoMapper.toDomain(request, unidadAcademica.get());
+
+            UnidadAcademica unidadAcademica = unidadRepository
+                    .findById(request.unidadId())
+                    .orElseThrow(() -> new NotFoundException("Unidad académica no encontrada"));
+
+            Curso curso = cursoDtoMapper.toDomain(request, unidadAcademica);
             cursoRepository.save(curso);
+            log.info("Curso creado correctamente: {}", curso.getId());
             return RegistroResponse.success("Curso creado correctamente");
         }catch (Exception e){
             log.error(e.getMessage());

@@ -37,4 +37,13 @@ public class Seccion {
     public void setPeriodo(PeriodoAcademico periodoAcademico) {
         this.periodoAcademico = periodoAcademico;
     }
+
+    @Override
+    public String toString() {
+        return "Seccion{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", periodoAcademico=" + periodoAcademico +
+                '}';
+    }
 }

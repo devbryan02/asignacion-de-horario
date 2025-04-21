@@ -12,5 +12,5 @@ public record RestriccionRequest(
         @JsonFormat(pattern = "HH:mm")
         LocalTime horaFin,
         String tipoRestriccion,
-        UUID idDocente
+        UUID docenteId
 ) { }

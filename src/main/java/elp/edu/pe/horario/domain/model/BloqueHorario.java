@@ -1,6 +1,7 @@
 package elp.edu.pe.horario.domain.model;
 
 import elp.edu.pe.horario.domain.enums.DiaSemana;
+import elp.edu.pe.horario.domain.enums.Turno;
 
 import java.time.LocalTime;
 import java.util.UUID;
@@ -11,14 +12,14 @@ public class BloqueHorario {
     private DiaSemana diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;
-    private String Turno;
+    private Turno turno;
 
-    public BloqueHorario(UUID id, DiaSemana diaSemana, LocalTime horaInicio, LocalTime horaFin, String turno) {
+    public BloqueHorario(UUID id, DiaSemana diaSemana, LocalTime horaInicio, LocalTime horaFin, Turno turno) {
         this.id = id;
         this.diaSemana = diaSemana;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
-        Turno = turno;
+        this.turno = turno;
     }
 
     public UUID getId() {
@@ -53,11 +54,11 @@ public class BloqueHorario {
         this.horaFin = horaFin;
     }
 
-    public String getTurno() {
-        return Turno;
+    public Turno getTurno() {
+        return turno;
     }
 
-    public void setTurno(String turno) {
-        Turno = turno;
+    public void setTurno(Turno turno) {
+        this.turno = turno;
     }
 }

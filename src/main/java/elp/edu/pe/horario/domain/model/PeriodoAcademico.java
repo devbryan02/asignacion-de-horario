@@ -48,4 +48,14 @@ public class PeriodoAcademico {
     public void setFechaFin(LocalDate fechaFin) {
         this.fechaFin = fechaFin;
     }
+
+    @Override
+    public String toString() {
+        return "PeriodoAcademico{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", fechaInicio=" + fechaInicio +
+                ", fechaFin=" + fechaFin +
+                '}';
+    }
 }

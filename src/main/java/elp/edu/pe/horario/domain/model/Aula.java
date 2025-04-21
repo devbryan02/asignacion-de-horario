@@ -49,4 +49,14 @@ public class Aula {
     public void setTipo(TipoAula tipo) {
         this.tipo = tipo;
     }
+
+    @Override
+    public String toString() {
+        return "Aula{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", capacidad=" + capacidad +
+                ", tipo=" + tipo +
+                '}';
+    }
 }

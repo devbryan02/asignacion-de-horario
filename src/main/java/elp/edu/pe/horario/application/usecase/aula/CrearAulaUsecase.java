@@ -25,6 +25,7 @@ public class CrearAulaUsecase {
         try{
             Aula aula = mapper.toDomain(request);
             aulaRepository.save(aula);
+            log.info("Aula creada: {}", aula);
             return RegistroResponse.success("Aula creada correctamente");
         }catch (Exception e){
             log.error("Error al crear el aula", e);

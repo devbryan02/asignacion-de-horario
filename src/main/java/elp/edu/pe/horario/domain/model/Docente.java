@@ -37,4 +37,13 @@ public class Docente {
     public void setHorasContratadas(Integer horasContratadas) {
         this.horasContratadas = horasContratadas;
     }
+
+    @Override
+    public String toString() {
+        return "Docente{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", horasContratadas=" + horasContratadas +
+                '}';
+    }
 }

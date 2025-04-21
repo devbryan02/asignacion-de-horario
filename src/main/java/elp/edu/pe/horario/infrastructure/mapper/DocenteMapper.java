@@ -11,7 +11,7 @@ public class DocenteMapper {
         return new Docente(
                 entity.getId(),
                 entity.getNombre(),
-                entity.getHorasContradadas()
+                entity.getHorasContratadas()
         );
     }
 
@@ -19,7 +19,7 @@ public class DocenteMapper {
         var entity = new DocenteEntity();
         entity.setId(domain.getId());
         entity.setNombre(domain.getNombre());
-        entity.setHorasContradadas(domain.getHorasContradadas());
+        entity.setHorasContratadas(domain.getHorasContratadas());
         return entity;
     }
 }

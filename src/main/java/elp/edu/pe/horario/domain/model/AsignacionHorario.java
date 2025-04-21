@@ -6,20 +6,14 @@ public class AsignacionHorario {
 
     private UUID id;
     private Docente docente;
-    private Curso curso;
+    private CursoSeccion cursoSeccion;
     private Aula aula;
     private BloqueHorario bloqueHorario;
 
-    public AsignacionHorario(
-            UUID id,
-            Docente docente,
-            Curso curso,
-            Aula aula,
-            BloqueHorario bloqueHorario
-    ) {
+    public AsignacionHorario(UUID id, Docente docente, CursoSeccion cursoSeccion, Aula aula, BloqueHorario bloqueHorario) {
         this.id = id;
         this.docente = docente;
-        this.curso = curso;
+        this.cursoSeccion = cursoSeccion;
         this.aula = aula;
         this.bloqueHorario = bloqueHorario;
     }
@@ -40,12 +34,12 @@ public class AsignacionHorario {
         this.docente = docente;
     }
 
-    public Curso getCurso() {
-        return curso;
+    public CursoSeccion getCursoSeccion() {
+        return cursoSeccion;
     }
 
-    public void setCurso(Curso curso) {
-        this.curso = curso;
+    public void setCursoSeccion(CursoSeccion cursoSeccion) {
+        this.cursoSeccion = cursoSeccion;
     }
 
     public Aula getAula() {
@@ -62,5 +56,16 @@ public class AsignacionHorario {
 
     public void setBloqueHorario(BloqueHorario bloqueHorario) {
         this.bloqueHorario = bloqueHorario;
+    }
+
+    @Override
+    public String toString() {
+        return "AsignacionHorario{" +
+                "id=" + id +
+                ", docente=" + docente +
+                ", cursoSeccion=" + cursoSeccion +
+                ", aula=" + aula +
+                ", bloqueHorario=" + bloqueHorario +
+                '}';
     }
 }

@@ -26,6 +26,7 @@ public class SeccionEntity {
     @JoinColumn(name = "periodo_id", nullable = false)
     private PeriodoEntity periodo;
 
-    @ManyToMany(mappedBy = "secciones")
-    private List<CursoEntity> cursos = new ArrayList<>();
+    @OneToMany(mappedBy = "seccion")
+    private List<CursoSeccionEntity> cursoSecciones = new ArrayList<>();
+
 }

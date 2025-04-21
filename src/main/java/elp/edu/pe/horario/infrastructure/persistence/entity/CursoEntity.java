@@ -28,16 +28,8 @@ public class CursoEntity {
     @JoinColumn(name = "unidad_id", nullable = false)
     private UnidadEntity unidad;
 
-    @ManyToMany
-    @JoinTable(
-            name = "materia_seccion",
-            joinColumns = @JoinColumn(name = "materia_id"),
-            inverseJoinColumns = @JoinColumn(name = "seccion_id"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"materia_id", "seccion_id"})
-    )
-    private List<SeccionEntity> secciones = new ArrayList<>();
 
-    @OneToMany(mappedBy = "curso", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    private List<AsignacionHorarioEntity> asignaciones = new ArrayList<>();
+    @OneToMany(mappedBy = "curso")
+    private List<CursoSeccionEntity> cursoSecciones = new ArrayList<>();
 
 }

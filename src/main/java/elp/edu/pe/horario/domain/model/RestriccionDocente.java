@@ -12,7 +12,7 @@ public class RestriccionDocente {
     private DiaSemana diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;
-    private TipoRestriccion tipoRestriccion; // "NO DISPONIBLE" o "DISPONIBLE"
+    private TipoRestriccion tipoRestriccion;
     private Docente docente;
 
     public RestriccionDocente(UUID id, DiaSemana diaSemana, LocalTime horaFin, LocalTime horaInicio, TipoRestriccion tipoRestriccion, Docente docente) {
@@ -70,5 +70,17 @@ public class RestriccionDocente {
 
     public void setDiaSemana(DiaSemana diaSemana) {
         this.diaSemana = diaSemana;
+    }
+
+    @Override
+    public String toString() {
+        return "RestriccionDocente{" +
+                "id=" + id +
+                ", diaSemana=" + diaSemana +
+                ", horaInicio=" + horaInicio +
+                ", horaFin=" + horaFin +
+                ", tipoRestriccion=" + tipoRestriccion +
+                ", docente=" + docente +
+                '}';
     }
 }

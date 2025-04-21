@@ -57,4 +57,15 @@ public class Curso {
     public void setUnidad(UnidadAcademica unidad) {
         this.unidad = unidad;
     }
+
+    @Override
+    public String toString() {
+        return "Curso{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", horasSemanales=" + horasSemanales +
+                ", tipo='" + tipo + '\'' +
+                ", unidad=" + unidad +
+                '}';
+    }
 }
