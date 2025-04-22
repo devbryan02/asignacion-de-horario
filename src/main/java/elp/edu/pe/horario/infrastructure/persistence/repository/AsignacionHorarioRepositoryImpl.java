@@ -44,4 +44,22 @@ public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioReposit
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
+
+    @Override
+    public List<AsignacionHorario> saveAll(List<AsignacionHorario> asignaciones) {
+        List<AsignacionHorarioEntity> entities = asignaciones.stream()
+                .map(mapper::toEntity)
+                .toList();
+        List<AsignacionHorarioEntity> savedEntities = jpaRepository.saveAll(entities);
+        return savedEntities.stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<AsignacionHorario> findByDocenteId(UUID docenteId) {
+        return jpaRepository.findByDocenteId(docenteId).stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
 }

@@ -35,5 +35,4 @@ public class AsignacionHorarioEntity {
     @JoinColumn(name = "bloque_horario_id", nullable = false)
     private BloqueHorarioEntity bloqueHorario;
 
-
 }

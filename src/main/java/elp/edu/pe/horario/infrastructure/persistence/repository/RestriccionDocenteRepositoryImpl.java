@@ -46,4 +46,12 @@ public class RestriccionDocenteRepositoryImpl implements RestriccionDocenteRepos
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
+
+    @Override
+    public List<RestriccionDocente> findAllByDocenteId(UUID docenteId) {
+        return jpaRepository.findAllByDocenteId(docenteId)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
 }

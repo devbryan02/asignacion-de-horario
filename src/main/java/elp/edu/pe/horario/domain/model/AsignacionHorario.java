@@ -1,14 +1,28 @@
 package elp.edu.pe.horario.domain.model;
 
+import org.optaplanner.core.api.domain.entity.PlanningEntity;
+import org.optaplanner.core.api.domain.lookup.PlanningId;
+import org.optaplanner.core.api.domain.variable.PlanningVariable;
+
 import java.util.UUID;
 
+@PlanningEntity
 public class AsignacionHorario {
 
+    @PlanningId
     private UUID id;
+
     private Docente docente;
     private CursoSeccion cursoSeccion;
+
+    @PlanningVariable(valueRangeProviderRefs = "aulaRange")
     private Aula aula;
+
+    @PlanningVariable(valueRangeProviderRefs = "bloqueHorarioRange")
     private BloqueHorario bloqueHorario;
+
+    public AsignacionHorario() {
+    }
 
     public AsignacionHorario(UUID id, Docente docente, CursoSeccion cursoSeccion, Aula aula, BloqueHorario bloqueHorario) {
         this.id = id;

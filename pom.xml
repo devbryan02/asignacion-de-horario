@@ -44,11 +44,10 @@
 
     <dependencies>
 
-        <!-- Spring AI -->
         <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
-            <version>0.8.1</version>
+            <groupId>org.optaplanner</groupId>
+            <artifactId>optaplanner-spring-boot-starter</artifactId>
+            <version>9.44.0.Final</version>
         </dependency>
 
         <dependency>

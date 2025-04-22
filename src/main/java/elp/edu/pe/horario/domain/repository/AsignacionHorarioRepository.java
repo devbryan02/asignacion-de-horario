@@ -12,5 +12,11 @@ public interface AsignacionHorarioRepository {
     Optional<AsignacionHorario> findById(UUID id);
     void deleteById(UUID id);
     List<AsignacionHorario> findAll();
+    //saveAll
+    List<AsignacionHorario> saveAll(List<AsignacionHorario> asignaciones);
+
+    //findByDocenteId
+    List<AsignacionHorario> findByDocenteId(UUID docenteId);
+
 
 }

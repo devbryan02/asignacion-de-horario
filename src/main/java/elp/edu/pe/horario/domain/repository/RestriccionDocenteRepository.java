@@ -12,5 +12,6 @@ public interface RestriccionDocenteRepository {
     RestriccionDocente save(RestriccionDocente restriccionDocente);
     Optional<RestriccionDocente> findById(UUID id);
     void deleteById(UUID id);
+    List<RestriccionDocente> findAllByDocenteId(UUID docenteId);
 
 }
