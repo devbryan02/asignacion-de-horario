@@ -3,15 +3,15 @@ package elp.edu.pe.horario.domain.repository;
 import elp.edu.pe.horario.domain.model.AsignacionHorario;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface AsignacionHorarioRepository {
 
-    Optional<AsignacionHorario> findById(UUID id);
-    void deleteById(UUID id);
-    List<AsignacionHorario> findAll();
     void deleteAllInBatch();
     AsignacionHorario save(AsignacionHorario asignacionHorario);
+    List<AsignacionHorario> findBySeccionId(UUID seccionId);
+    List<AsignacionHorario> findByDocenteId(UUID docenteId);
+    List<AsignacionHorario> findByPeriodoId(UUID periodoId);
+
 
 }

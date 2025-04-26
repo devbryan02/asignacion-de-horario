@@ -22,7 +22,7 @@ public class HorarioSolverUseCase {
     private final SolverManager<HorarioSolucion, UUID> solverManager;
     private final AsignacionHorarioRepository asignacionHorarioRepository;
     private final Logger log = LoggerFactory.getLogger(HorarioSolverUseCase.class);
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public HorarioSolverUseCase(SolverManager<HorarioSolucion, UUID> solverManager,
                                  AsignacionHorarioRepository asignacionHorarioRepository,

@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 @Repository
 public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioRepository {
@@ -27,12 +26,6 @@ public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioReposit
         this.entityManager = entityManager;
     }
 
-    @Override
-    public List<AsignacionHorario> findAll() {
-        return jpaRepository.findAll().stream()
-                .map(mapper::toDomain)
-                .toList();
-    }
 
     @Override
     public void deleteAllInBatch() {
@@ -46,15 +39,29 @@ public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioReposit
         return mapper.toDomain(entity);
     }
 
-
     @Override
-    public Optional<AsignacionHorario> findById(UUID id) {
-        return jpaRepository.findById(id).map(mapper::toDomain);
+    public List<AsignacionHorario> findBySeccionId(UUID seccionId) {
+        return jpaRepository.findByCursoSeccion_Seccion_Id(seccionId)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 
     @Override
-    public void deleteById(UUID id) {
-        jpaRepository.deleteById(id);
+    public List<AsignacionHorario> findByDocenteId(UUID docenteId) {
+        return jpaRepository.findByDocente_Id(docenteId)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
+
+    @Override
+    public List<AsignacionHorario> findByPeriodoId(UUID periodoId) {
+        return jpaRepository.findByCursoSeccion_Seccion_Id(periodoId)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+
 
 }

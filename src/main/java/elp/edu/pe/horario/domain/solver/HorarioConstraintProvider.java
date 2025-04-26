@@ -167,5 +167,4 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                                 totalHoras - docente.getHorasMaximasPorDia())
                 .asConstraint("Excede horas máximas por día para docente");
     }
-
 }

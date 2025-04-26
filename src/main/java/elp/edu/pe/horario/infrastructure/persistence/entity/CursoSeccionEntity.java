@@ -1,6 +1,5 @@
 package elp.edu.pe.horario.infrastructure.persistence.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import elp.edu.pe.horario.domain.enums.ModoClase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
