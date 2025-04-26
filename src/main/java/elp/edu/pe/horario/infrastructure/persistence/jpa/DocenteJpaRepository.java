@@ -7,5 +7,4 @@ import java.util.UUID;
 
 public interface DocenteJpaRepository extends JpaRepository<DocenteEntity, UUID> {
 
-
 }

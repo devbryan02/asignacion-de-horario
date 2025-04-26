@@ -6,34 +6,46 @@ import elp.edu.pe.horario.domain.repository.AsignacionHorarioRepository;
 import elp.edu.pe.horario.infrastructure.mapper.AsignacionMapper;
 import elp.edu.pe.horario.infrastructure.persistence.entity.AsignacionHorarioEntity;
 import elp.edu.pe.horario.infrastructure.persistence.jpa.AsignacionHorarioJpaRepository;
+import jakarta.persistence.EntityManager;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 @Repository
 public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioRepository {
 
     private final AsignacionHorarioJpaRepository jpaRepository;
     private final AsignacionMapper mapper;
+    private final EntityManager entityManager;
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(AsignacionHorarioRepositoryImpl.class);
 
-    public AsignacionHorarioRepositoryImpl(AsignacionHorarioJpaRepository jpaRepository, AsignacionMapper mapper) {
+    public AsignacionHorarioRepositoryImpl(AsignacionHorarioJpaRepository jpaRepository, AsignacionMapper mapper, EntityManager entityManager) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;
+        this.entityManager = entityManager;
+    }
+
+    @Override
+    public List<AsignacionHorario> findAll() {
+        return jpaRepository.findAll().stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public void deleteAllInBatch() {
+        jpaRepository.deleteAllInBatch();
     }
 
     @Override
     public AsignacionHorario save(AsignacionHorario asignacionHorario) {
         AsignacionHorarioEntity entity = mapper.toEntity(asignacionHorario);
-        AsignacionHorarioEntity savedEntity = jpaRepository.save(entity);
-        return mapper.toDomain(savedEntity);
+        entity = entityManager.merge(entity);
+        return mapper.toDomain(entity);
     }
 
-    @Override
-    public List<AsignacionHorario> findAll() {
-        return List.of();
-    }
 
     @Override
     public Optional<AsignacionHorario> findById(UUID id) {
@@ -45,21 +57,4 @@ public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioReposit
         jpaRepository.deleteById(id);
     }
 
-    @Override
-    public List<AsignacionHorario> saveAll(List<AsignacionHorario> asignaciones) {
-        List<AsignacionHorarioEntity> entities = asignaciones.stream()
-                .map(mapper::toEntity)
-                .toList();
-        List<AsignacionHorarioEntity> savedEntities = jpaRepository.saveAll(entities);
-        return savedEntities.stream()
-                .map(mapper::toDomain)
-                .toList();
-    }
-
-    @Override
-    public List<AsignacionHorario> findByDocenteId(UUID docenteId) {
-        return jpaRepository.findByDocenteId(docenteId).stream()
-                .map(mapper::toDomain)
-                .toList();
-    }
 }

@@ -19,6 +19,10 @@ public class AsignacionHorarioEntity {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version = 1L;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "docente_id", nullable = false)
     private DocenteEntity docente;
@@ -28,11 +32,11 @@ public class AsignacionHorarioEntity {
     private CursoSeccionEntity cursoSeccion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "aula_id", nullable = false)
+    @JoinColumn(name = "aula_id")
     private AulaEntity aula;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bloque_horario_id", nullable = false)
+    @JoinColumn(name = "bloque_horario_id")
     private BloqueHorarioEntity bloqueHorario;
 
 }

@@ -11,7 +11,8 @@ public class DocenteDtoMapper {
         return new Docente(
                 null,
                 request.nombre(),
-                request.horasContratadas()
+                request.horasContratadas(),
+                request.horasMaximasPorDia()
         );
     }
 

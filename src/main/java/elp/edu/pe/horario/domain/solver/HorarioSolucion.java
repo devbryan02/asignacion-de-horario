@@ -15,11 +15,9 @@ public class HorarioSolucion {
 
     //Datos fijos para usar de referencia
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "aulaRange")
     private List<Aula> aulaList;
 
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "bloqueHorarioRange")
     private List<BloqueHorario> bloqueHorarioList;
 
     @ProblemFactCollectionProperty
@@ -50,6 +48,7 @@ public class HorarioSolucion {
         this.asignacionHorarioList = asignacionHorarioList;
     }
 
+    @ValueRangeProvider(id = "aulaRange")
     public List<Aula> getAulaList() {
         return aulaList;
     }
@@ -58,6 +57,7 @@ public class HorarioSolucion {
         this.aulaList = aulaList;
     }
 
+    @ValueRangeProvider(id = "bloqueHorarioRange")
     public List<BloqueHorario> getBloqueHorarioList() {
         return bloqueHorarioList;
     }

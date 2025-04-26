@@ -45,4 +45,12 @@ public class UnidadRepositoryImpl implements UnidadRepository {
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
+
+    @Override
+    public List<UnidadAcademica> findAllById(List<UUID> ids) {
+        return jpaRepository.findAllById(ids)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
 }

@@ -22,6 +22,7 @@ public class DocenteEntity {
     private UUID id;
     private String nombre;
     private Integer horasContratadas;
+    private Integer horasMaximasPorDia;
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(

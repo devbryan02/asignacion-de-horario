@@ -12,4 +12,5 @@ public interface UnidadRepository {
     Optional<UnidadAcademica> findById(UUID id);
     UnidadAcademica save(UnidadAcademica unidad);
     void deleteById(UUID id);
+    List<UnidadAcademica> findAllById(List<UUID> ids);
 }

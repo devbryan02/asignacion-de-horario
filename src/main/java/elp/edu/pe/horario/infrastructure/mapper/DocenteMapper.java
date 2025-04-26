@@ -7,12 +7,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class DocenteMapper {
 
+    private final UnidadMapper mapper;
+
+    public DocenteMapper(UnidadMapper mapper) {
+        this.mapper = mapper;
+    }
+
     public Docente toDomain(DocenteEntity entity) {
-        return new Docente(
+        Docente docente = new  Docente(
                 entity.getId(),
                 entity.getNombre(),
-                entity.getHorasContratadas()
+                entity.getHorasContratadas(),
+                entity.getHorasMaximasPorDia()
         );
+        if(entity.getUnidades() != null){
+            docente.setUnidadesAcademicas(
+                    entity.getUnidades()
+                            .stream()
+                            .map(mapper::toDomain)
+                            .toList()
+            );
+        }
+        return docente;
     }
 
     public DocenteEntity toEntity(Docente domain) {
@@ -20,6 +36,16 @@ public class DocenteMapper {
         entity.setId(domain.getId());
         entity.setNombre(domain.getNombre());
         entity.setHorasContratadas(domain.getHorasContratadas());
+        entity.setHorasMaximasPorDia(domain.getHorasMaximasPorDia());
+
+        if(domain.getUnidadesAcademicas() != null){
+            entity.setUnidades(
+                    domain.getUnidadesAcademicas()
+                            .stream()
+                            .map(mapper::toEntity)
+                            .toList()
+            );
+        }
         return entity;
     }
 }

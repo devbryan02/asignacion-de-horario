@@ -8,29 +8,16 @@ public class Docente {
     private UUID id;
     private String nombre;
     private Integer horasContratadas;
+    private Integer horasMaximasPorDia;
+
     private List<RestriccionDocente> restricciones;
     private List<UnidadAcademica> unidadesAcademicas;
 
-    public Docente(UUID id, String nombre, Integer horasContratadas) {
+    public Docente(UUID id, String nombre, Integer horasContratadas, Integer horasMaximasPorDia) {
         this.id = id;
         this.nombre = nombre;
         this.horasContratadas = horasContratadas;
-    }
-
-    public List<UnidadAcademica> getUnidadesAcademicas() {
-        return unidadesAcademicas;
-    }
-
-    public void setUnidadesAcademicas(List<UnidadAcademica> unidadesAcademicas) {
-        this.unidadesAcademicas = unidadesAcademicas;
-    }
-
-    public List<RestriccionDocente> getRestricciones() {
-        return restricciones;
-    }
-
-    public void setRestricciones(List<RestriccionDocente> restricciones) {
-        this.restricciones = restricciones;
+        this.horasMaximasPorDia = horasMaximasPorDia;
     }
 
     public UUID getId() {
@@ -57,12 +44,39 @@ public class Docente {
         this.horasContratadas = horasContratadas;
     }
 
+    public Integer getHorasMaximasPorDia() {
+        return horasMaximasPorDia;
+    }
+
+    public void setHorasMaximasPorDia(Integer horasMaximasPorDia) {
+        this.horasMaximasPorDia = horasMaximasPorDia;
+    }
+
+    public List<RestriccionDocente> getRestricciones() {
+        return restricciones;
+    }
+
+    public void setRestricciones(List<RestriccionDocente> restricciones) {
+        this.restricciones = restricciones;
+    }
+
+    public List<UnidadAcademica> getUnidadesAcademicas() {
+        return unidadesAcademicas;
+    }
+
+    public void setUnidadesAcademicas(List<UnidadAcademica> unidadesAcademicas) {
+        this.unidadesAcademicas = unidadesAcademicas;
+    }
+
     @Override
     public String toString() {
         return "Docente{" +
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", horasContratadas=" + horasContratadas +
+                ", horasMaximasPorDia=" + horasMaximasPorDia +
+                ", restricciones=" + restricciones +
+                ", unidadesAcademicas=" + unidadesAcademicas +
                 '}';
     }
 }

@@ -1,10 +1,10 @@
 package elp.edu.pe.horario.domain.solver;
 
+import elp.edu.pe.horario.domain.enums.TipoRestriccion;
 import elp.edu.pe.horario.domain.model.AsignacionHorario;
 import elp.edu.pe.horario.domain.model.BloqueHorario;
 import elp.edu.pe.horario.domain.model.Docente;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
-import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintCollectors;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -23,10 +23,11 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 docenteNoSuperpuesto(constraintFactory),
                 evitarRestriccionesDocente(constraintFactory),
                 limitarHorasContratadasPorDocente(constraintFactory),
-                balancearHorasDocente(constraintFactory)
+                balancearHorasDocente(constraintFactory),
+                preferirBloquesDisponibles(constraintFactory),
+                limitarHorasPorDiaPorDocente(constraintFactory)
         };
     }
-
 
     // Regla 1: Un aula no puede estar ocupada en dos asignaciones al mismo tiempo
     private Constraint aulaNoSuperpuesta(ConstraintFactory factory) {
@@ -67,7 +68,8 @@ public class HorarioConstraintProvider implements ConstraintProvider {
 
                     // Chequeamos si alguna restricción aplica al bloque actual
                     return docente.getRestricciones().stream().anyMatch(restriccion ->
-                            restriccion.getDiaSemana() == bloque.getDiaSemana() &&
+                            restriccion.getTipoRestriccion() == TipoRestriccion.BLOQUEADO &&
+                                    restriccion.getDiaSemana() == bloque.getDiaSemana() &&
                                     bloque.getHoraInicio().isBefore(restriccion.getHoraFin()) &&
                                     bloque.getHoraFin().isAfter(restriccion.getHoraInicio())
                     );
@@ -75,6 +77,30 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 .penalize(HardSoftScore.ONE_HARD)
                 .asConstraint("Bloque restringido por docente");
     }
+
+    private Constraint preferirBloquesDisponibles(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .filter(asignacion -> {
+                    Docente docente = asignacion.getDocente();
+                    if (docente == null || docente.getRestricciones() == null) return false;
+
+                    BloqueHorario bloque = asignacion.getBloqueHorario();
+                    if (bloque == null) return false;
+
+                    // Recompensar si el docente marcó este bloque como DISPONIBLE
+                    return docente.getRestricciones().stream().anyMatch(restriccion ->
+                            restriccion.getTipoRestriccion() == TipoRestriccion.DISPONIBLE &&
+                                    restriccion.getDiaSemana() == bloque.getDiaSemana() &&
+                                    bloque.getHoraInicio().isBefore(restriccion.getHoraFin()) &&
+                                    bloque.getHoraFin().isAfter(restriccion.getHoraInicio())
+                    );
+                })
+                .reward(HardSoftScore.ONE_SOFT)
+                .asConstraint("Preferir bloques disponibles por el docente");
+    }
+
+
 
     /**
      * Restricción que verifica que los docentes no excedan sus horas contratadas
@@ -84,14 +110,14 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 .forEach(AsignacionHorario.class)
                 .groupBy(
                         AsignacionHorario::getDocente,
-                        ConstraintCollectors.sumLong(ah -> {
+                        ConstraintCollectors.sum(ah -> {
                             Duration duracion = Duration.between(ah.getBloqueHorario().getHoraInicio(),
                                     ah.getBloqueHorario().getHoraFin());
-                            return duracion.toHours();
+                            return (int) duracion.toHours();
                         })
                 )
                 .filter((docente, totalHoras) -> totalHoras > docente.getHorasContratadas())
-                .penalizeLong(HardSoftLongScore.ONE_HARD,
+                .penalize(HardSoftScore.ONE_HARD,
                         (docente, totalHoras) -> totalHoras - docente.getHorasContratadas())
                 .asConstraint("Excede horas contratadas");
     }
@@ -103,15 +129,43 @@ public class HorarioConstraintProvider implements ConstraintProvider {
     public Constraint balancearHorasDocente(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(AsignacionHorario.class)
-                .groupBy(AsignacionHorario::getDocente, ConstraintCollectors.sumLong(ah -> {
-                    Duration duracion = Duration.between(ah.getBloqueHorario().getHoraInicio(), ah.getBloqueHorario().getHoraFin());
-                    return duracion.toHours();
-                }))
-                .rewardLong(HardSoftLongScore.ONE_SOFT,
-                        (docente, totalHoras) -> {
-                            long diferencia = docente.getHorasContratadas() - totalHoras;
-                            return Math.max(0, docente.getHorasContratadas() - diferencia); // entre más cerca, mejor
-                        })
-                .asConstraint("Aproximarse a horas contratadas");
+                .groupBy(AsignacionHorario::getDocente, 
+                    ConstraintCollectors.sum(ah -> {
+                        Duration duracion = Duration.between(ah.getBloqueHorario().getHoraInicio(), 
+                                ah.getBloqueHorario().getHoraFin());
+                        return (int) duracion.toHours();
+                    }))
+            .reward(HardSoftScore.ONE_SOFT,
+                    (docente, totalHoras) -> {
+                        int diferencia = docente.getHorasContratadas() - totalHoras;
+                        return Math.max(0, docente.getHorasContratadas() - diferencia);
+                    })
+            .asConstraint("Aproximarse a horas contratadas");
     }
+
+    /**
+     * Restricción que verifica que los docentes no excedan sus horas máximas por día
+     */
+    public Constraint limitarHorasPorDiaPorDocente(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(
+                        AsignacionHorario::getDocente,
+                        asignacion -> asignacion.getBloqueHorario().getDiaSemana(),
+                        ConstraintCollectors.sum(asignacion -> {
+                            Duration duracion = Duration.between(
+                                    asignacion.getBloqueHorario().getHoraInicio(),
+                                    asignacion.getBloqueHorario().getHoraFin());
+                            return (int) duracion.toHours();
+                        })
+                )
+                .filter((docente, dia, totalHoras) ->
+                        docente != null && docente.getHorasMaximasPorDia() != null &&
+                                totalHoras > docente.getHorasMaximasPorDia())
+                .penalize(HardSoftScore.ONE_HARD,
+                        (docente, dia, totalHoras) ->
+                                totalHoras - docente.getHorasMaximasPorDia())
+                .asConstraint("Excede horas máximas por día para docente");
+    }
+
 }

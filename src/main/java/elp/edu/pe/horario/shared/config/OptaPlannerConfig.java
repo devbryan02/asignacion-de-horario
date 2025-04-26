@@ -5,7 +5,11 @@ import elp.edu.pe.horario.domain.solver.HorarioConstraintProvider;
 import elp.edu.pe.horario.domain.solver.HorarioSolucion;
 import org.optaplanner.core.api.solver.SolverFactory;
 import org.optaplanner.core.api.solver.SolverManager;
+import org.optaplanner.core.config.constructionheuristic.ConstructionHeuristicPhaseConfig;
+import org.optaplanner.core.config.localsearch.LocalSearchPhaseConfig;
 import org.optaplanner.core.config.solver.SolverConfig;
+import org.optaplanner.core.config.solver.monitoring.MonitoringConfig;
+import org.optaplanner.core.config.solver.monitoring.SolverMetric;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,7 +24,11 @@ public class OptaPlannerConfig {
                 .withSolutionClass(HorarioSolucion.class)
                 .withEntityClasses(AsignacionHorario.class)
                 .withConstraintProviderClass(HorarioConstraintProvider.class)
-                .withTerminationSpentLimit(java.time.Duration.ofSeconds(10));
+                .withTerminationSpentLimit(java.time.Duration.ofSeconds(10))
+                .withPhases(
+                new ConstructionHeuristicPhaseConfig(),  // Fase de construcción inicial
+                new LocalSearchPhaseConfig()// Fase de búsqueda local para optimizar
+        );
     }
 
     @Bean

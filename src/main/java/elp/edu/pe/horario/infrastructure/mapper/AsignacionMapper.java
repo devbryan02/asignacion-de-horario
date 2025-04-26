@@ -8,14 +8,13 @@ import org.springframework.stereotype.Component;
 public class AsignacionMapper {
 
     private final DocenteMapper docenteMapper;
-    private final CursoMapper cursoMapper;
     private final AulaMapper aulaMapper;
     private final BloqueHorarioMapper bloqueHorarioMapper;
     private final CursoSeccionMapper cursoSeccionMapper;
 
-    public AsignacionMapper(DocenteMapper docenteMapper, CursoMapper cursoMapper, AulaMapper aulaMapper, BloqueHorarioMapper bloqueHorarioMapper, CursoSeccionMapper cursoSeccionMapper) {
+    public AsignacionMapper(DocenteMapper docenteMapper, AulaMapper aulaMapper, BloqueHorarioMapper bloqueHorarioMapper, CursoSeccionMapper cursoSeccionMapper) {
         this.docenteMapper = docenteMapper;
-        this.cursoMapper = cursoMapper;
+
         this.aulaMapper = aulaMapper;
         this.bloqueHorarioMapper = bloqueHorarioMapper;
         this.cursoSeccionMapper = cursoSeccionMapper;
@@ -33,7 +32,9 @@ public class AsignacionMapper {
 
     public AsignacionHorarioEntity toEntity(AsignacionHorario domain){
         var entity = new AsignacionHorarioEntity();
-        entity.setId(domain.getId());
+        if (domain.getId() != null) {
+            entity.setId(domain.getId());
+        }
         entity.setDocente(docenteMapper.toEntity(domain.getDocente()));
         entity.setCursoSeccion(cursoSeccionMapper.toEntity(domain.getCursoSeccion()));
         entity.setAula(aulaMapper.toEntity(domain.getAula()));
