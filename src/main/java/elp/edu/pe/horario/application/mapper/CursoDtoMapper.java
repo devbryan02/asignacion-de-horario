@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.application.mapper;
 
+import elp.edu.pe.horario.application.dto.CursoDto;
 import elp.edu.pe.horario.application.dto.request.CursoRequest;
 import elp.edu.pe.horario.domain.model.Curso;
 import elp.edu.pe.horario.domain.model.UnidadAcademica;
@@ -17,6 +18,16 @@ public class CursoDtoMapper {
                 request.horasSemanales(),
                 request.tipo(),
                 unidadAcademica
+        );
+    }
+
+    public CursoDto toDto(Curso curso) {
+        return new CursoDto(
+                curso.getId(),
+                curso.getNombre(),
+                curso.getHorasSemanales(),
+                curso.getTipo(),
+                curso.getUnidad().getNombre()
         );
     }
 }
