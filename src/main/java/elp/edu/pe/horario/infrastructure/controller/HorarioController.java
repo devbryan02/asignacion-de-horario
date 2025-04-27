@@ -38,5 +38,4 @@ public class HorarioController {
         List<HorarioDto> horarios = obtenerHorariosUseCase.obtenerHorariosPorPeriodo(periodoID);
         return ResponseEntity.ok(horarios);
     }
-
 }
