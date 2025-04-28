@@ -1,5 +1,7 @@
 package elp.edu.pe.horario.application.mapper;
 
+import elp.edu.pe.horario.application.dto.DocenteDto;
+import elp.edu.pe.horario.application.dto.RestriccionDocenteDto;
 import elp.edu.pe.horario.application.dto.request.DocenteRequest;
 import elp.edu.pe.horario.domain.model.Docente;
 import org.springframework.stereotype.Component;
@@ -16,4 +18,22 @@ public class DocenteDtoMapper {
         );
     }
 
+    public DocenteDto toDtoWithRestricciones(Docente docente){
+        return new DocenteDto(
+                docente.getId(),
+                docente.getNombre(),
+                docente.getHorasContratadas(),
+                docente.getHorasMaximasPorDia(),
+                docente.getRestricciones() != null ? docente.getRestricciones()
+                                .stream()
+                                .map(restriccion -> new RestriccionDocenteDto(
+                                        restriccion.getId(),
+                                        restriccion.getDiaSemana(),
+                                        restriccion.getHoraInicio(),
+                                        restriccion.getHoraFin(),
+                                        restriccion.getTipoRestriccion()
+                                ))
+                                .toList() : null
+        );
+    }
 }

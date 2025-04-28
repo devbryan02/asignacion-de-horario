@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.application.mapper;
 
+import elp.edu.pe.horario.application.dto.PeriodoDto;
 import elp.edu.pe.horario.application.dto.request.PeriodoRequest;
 import elp.edu.pe.horario.domain.model.PeriodoAcademico;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,15 @@ public class PeriodoDtoMapper {
                 request.nombre(),
                 request.fechaInicio(),
                 request.fechaFin()
+        );
+    }
+
+    public PeriodoDto toDto(PeriodoAcademico periodo){
+        return new PeriodoDto(
+                periodo.getId(),
+                periodo.getNombre(),
+                periodo.getFechaInicio(),
+                periodo.getFechaFin()
         );
     }
 }

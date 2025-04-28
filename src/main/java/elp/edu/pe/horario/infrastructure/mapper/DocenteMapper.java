@@ -1,6 +1,7 @@
 package elp.edu.pe.horario.infrastructure.mapper;
 
 import elp.edu.pe.horario.domain.model.Docente;
+import elp.edu.pe.horario.domain.model.RestriccionDocente;
 import elp.edu.pe.horario.infrastructure.persistence.entity.DocenteEntity;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ public class DocenteMapper {
                 entity.getHorasContratadas(),
                 entity.getHorasMaximasPorDia()
         );
+        //seteamos las unidades academicas al docente
         if(entity.getUnidades() != null){
             docente.setUnidadesAcademicas(
                     entity.getUnidades()
@@ -28,6 +30,22 @@ public class DocenteMapper {
                             .toList()
             );
         }
+        //Seteamos las restricciones al docente
+        if (entity.getRestricciones() != null) {
+            docente.setRestricciones(
+                    entity.getRestricciones().stream()
+                            .map(restriccionEntity -> new RestriccionDocente(
+                                    restriccionEntity.getId(),
+                                    restriccionEntity.getDiaSemana(),
+                                    restriccionEntity.getHoraInicio(),
+                                    restriccionEntity.getHoraFin(),
+                                    restriccionEntity.getTipoRestriccion(),
+                                    null // Aquí evitamos la referencia circular al docente
+                            ))
+                            .toList()
+            );
+        }
+
         return docente;
     }
 
@@ -37,15 +55,6 @@ public class DocenteMapper {
         entity.setNombre(domain.getNombre());
         entity.setHorasContratadas(domain.getHorasContratadas());
         entity.setHorasMaximasPorDia(domain.getHorasMaximasPorDia());
-
-        if(domain.getUnidadesAcademicas() != null){
-            entity.setUnidades(
-                    domain.getUnidadesAcademicas()
-                            .stream()
-                            .map(mapper::toEntity)
-                            .toList()
-            );
-        }
         return entity;
     }
 }
