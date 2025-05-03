@@ -8,5 +8,5 @@ public record DocenteDto(
         String nombre,
         Integer horasContratadas,
         Integer horasMaximasPorDia,
-        List<RestriccionDocenteDto> restricciones
+        List<RestriccionDto> restricciones
 ) { }

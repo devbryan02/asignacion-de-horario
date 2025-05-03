@@ -29,6 +29,7 @@ public class EliminarUnidadUseCase {
                     .orElseThrow(() -> new NotFoundException("Unidad Academica no encontrada"));
 
             unidadRepository.deleteById(id);
+            log.info("Unidad Academica eliminada: {}", unidadAcademica);
         }catch (Exception e){
             log.error(e.getMessage());
             throw e;

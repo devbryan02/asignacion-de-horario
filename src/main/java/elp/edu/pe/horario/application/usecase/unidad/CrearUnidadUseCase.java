@@ -31,5 +31,4 @@ public class CrearUnidadUseCase {
             return RegistroResponse.failure("Error al crear la unidad academica");
         }
     }
-
 }

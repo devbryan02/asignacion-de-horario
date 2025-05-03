@@ -1,22 +1,27 @@
 package elp.edu.pe.horario.infrastructure.controller;
 
+import elp.edu.pe.horario.application.dto.RestriccionDocenteDto;
 import elp.edu.pe.horario.application.dto.request.RestriccionRequest;
 import elp.edu.pe.horario.application.dto.response.RegistroResponse;
 import elp.edu.pe.horario.application.usecase.restriccion_docente.CrearRestriccionUsecase;
+import elp.edu.pe.horario.application.usecase.restriccion_docente.ObtenerRestriccionesUseCase;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/restriccion-docente")
 public class RestriccionController {
 
     private final CrearRestriccionUsecase crearRestriccionUsecase;
+    private final ObtenerRestriccionesUseCase obtenerRestricciones;
 
-    public RestriccionController(CrearRestriccionUsecase crearRestriccionUsecase) {
+    public RestriccionController(CrearRestriccionUsecase crearRestriccionUsecase, ObtenerRestriccionesUseCase obtenerRestricciones) {
         this.crearRestriccionUsecase = crearRestriccionUsecase;
+        this.obtenerRestricciones = obtenerRestricciones;
     }
 
     @PostMapping
@@ -25,4 +30,15 @@ public class RestriccionController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping
+    public ResponseEntity<List<RestriccionDocenteDto>> obtenerRestricciones() {
+        List<RestriccionDocenteDto> restricciones = obtenerRestricciones.obtenerRestricciones();
+        return ResponseEntity.ok(restricciones);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Optional<RestriccionDocenteDto>> obtenerRestriccionPorId(@PathVariable UUID id) {
+        Optional<RestriccionDocenteDto> restriccion = obtenerRestricciones.obtenerRestriccionPorId(id);
+        return ResponseEntity.ok(restriccion);
+    }
 }

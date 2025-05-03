@@ -1,7 +1,7 @@
 package elp.edu.pe.horario.application.mapper;
 
 import elp.edu.pe.horario.application.dto.DocenteDto;
-import elp.edu.pe.horario.application.dto.RestriccionDocenteDto;
+import elp.edu.pe.horario.application.dto.RestriccionDto;
 import elp.edu.pe.horario.application.dto.request.DocenteRequest;
 import elp.edu.pe.horario.domain.model.Docente;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class DocenteDtoMapper {
                 docente.getHorasMaximasPorDia(),
                 docente.getRestricciones() != null ? docente.getRestricciones()
                                 .stream()
-                                .map(restriccion -> new RestriccionDocenteDto(
+                                .map(restriccion -> new RestriccionDto(
                                         restriccion.getId(),
                                         restriccion.getDiaSemana(),
                                         restriccion.getHoraInicio(),

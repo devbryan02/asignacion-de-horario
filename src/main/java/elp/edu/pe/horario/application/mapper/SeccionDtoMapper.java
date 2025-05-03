@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.application.mapper;
 
+import elp.edu.pe.horario.application.dto.SeccionDto;
 import elp.edu.pe.horario.application.dto.request.SeccionRequest;
 import elp.edu.pe.horario.domain.model.PeriodoAcademico;
 import elp.edu.pe.horario.domain.model.Seccion;
@@ -13,6 +14,13 @@ public class SeccionDtoMapper {
                 null,
                 request.nombre(),
                 periodo
+        );
+    }
+    public SeccionDto toDto(Seccion seccion){
+        return new SeccionDto(
+                seccion.getId(),
+                seccion.getNombre(),
+                seccion.getPeriodo().getNombre()
         );
     }
 }

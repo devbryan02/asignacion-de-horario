@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.application.mapper;
 
+import elp.edu.pe.horario.application.dto.RestriccionDocenteDto;
 import elp.edu.pe.horario.application.dto.request.RestriccionRequest;
 import elp.edu.pe.horario.domain.enums.DiaSemana;
 import elp.edu.pe.horario.domain.enums.TipoRestriccion;
@@ -21,4 +22,14 @@ public class RestriccionDtoMapper {
         );
     }
 
+    public RestriccionDocenteDto toDto(RestriccionDocente restriccionDocente){
+        return new RestriccionDocenteDto(
+                restriccionDocente.getId(),
+                restriccionDocente.getDocente().getNombre(),
+                restriccionDocente.getDiaSemana(),
+                restriccionDocente.getHoraInicio(),
+                restriccionDocente.getHoraFin(),
+                restriccionDocente.getTipoRestriccion()
+        );
+    }
 }
