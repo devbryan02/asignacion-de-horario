@@ -45,4 +45,9 @@ public class AulaRepositoryImpl implements AulaRepository {
     public void deleteById(UUID id) {
         aulaJpaRepository.deleteById(id);
     }
+
+    @Override
+    public void update(Aula aula) {
+        aulaJpaRepository.save(mapper.toEntity(aula));
+    }
 }

@@ -6,6 +6,8 @@ import elp.edu.pe.horario.domain.enums.TipoAula;
 import elp.edu.pe.horario.domain.model.Aula;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class AulaDtoMapper {
 
@@ -25,5 +27,11 @@ public class AulaDtoMapper {
                 aula.getCapacidad(),
                 aula.getTipo()
         );
+    }
+
+    public void updateAula(Aula existente, AulaRequest nuevo){
+        existente.setNombre(nuevo.nombre());
+        existente.setCapacidad(nuevo.capacidad());
+        existente.setTipo(TipoAula.valueOf(nuevo.tipo()));
     }
 }

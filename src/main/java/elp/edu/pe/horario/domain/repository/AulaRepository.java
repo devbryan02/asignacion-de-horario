@@ -12,5 +12,6 @@ public interface AulaRepository {
     List<Aula> findAll();
     Aula save(Aula aula);
     void deleteById(UUID id);
+    void update(Aula aula);
 
 }
