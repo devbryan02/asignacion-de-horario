@@ -12,4 +12,5 @@ public interface CursoSeccionRepository {
     Optional<CursoSeccion> findById(UUID id);
     CursoSeccion save(CursoSeccion curso);
     void deleteById(UUID id);
+    void saveAll(List<CursoSeccion> cursoSecciones);
 }

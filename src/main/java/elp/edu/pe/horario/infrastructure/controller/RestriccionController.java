@@ -41,4 +41,10 @@ public class RestriccionController {
         Optional<RestriccionDocenteDto> restriccion = obtenerRestricciones.obtenerRestriccionPorId(id);
         return ResponseEntity.ok(restriccion);
     }
+
+    @GetMapping("/docente/{id}")
+    public ResponseEntity<List<RestriccionDocenteDto>> obtenerRestriccionesPorDocente(@PathVariable UUID id) {
+        List<RestriccionDocenteDto> restricciones = obtenerRestricciones.obtenerRestriccionesPorDocente(id);
+        return ResponseEntity.ok(restricciones);
+    }
 }

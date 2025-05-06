@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.application.mapper;
 
+import elp.edu.pe.horario.application.dto.request.CursoSeccionBulkRequest;
 import elp.edu.pe.horario.application.dto.request.CursoSeccionRequest;
 import elp.edu.pe.horario.domain.enums.ModoClase;
 import elp.edu.pe.horario.domain.model.Curso;
@@ -19,4 +20,14 @@ public class CursoSeccionDtoMapper {
 
         );
     }
+
+    public CursoSeccion toDomainFromBulk(CursoSeccionBulkRequest request, Curso curso, Seccion seccion) {
+        return new CursoSeccion(
+                null,
+                curso,
+                seccion,
+                ModoClase.valueOf(request.modo())
+        );
+    }
+
 }

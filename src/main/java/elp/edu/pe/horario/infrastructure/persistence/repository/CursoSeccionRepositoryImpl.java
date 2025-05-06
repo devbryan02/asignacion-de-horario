@@ -47,4 +47,9 @@ public class CursoSeccionRepositoryImpl implements CursoSeccionRepository {
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
+
+    @Override
+    public void saveAll(List<CursoSeccion> cursoSecciones) {
+        jpaRepository.saveAllAndFlush(cursoSecciones.stream().map(mapper::toEntity).toList());
+    }
 }

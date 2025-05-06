@@ -32,4 +32,11 @@ public class ObtenerRestriccionesUseCase {
         return restriccionDocenteRepository.findById(id)
                 .map(mapper::toDto);
     }
+
+    public List<RestriccionDocenteDto> obtenerRestriccionesPorDocente(UUID docenteId){
+        return restriccionDocenteRepository.findAllByDocenteId(docenteId)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
 }
