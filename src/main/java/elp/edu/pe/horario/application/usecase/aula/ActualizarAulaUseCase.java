@@ -40,5 +40,4 @@ public class ActualizarAulaUseCase {
             return RegistroResponse.failure("Error al actualizar el aula");
         }
     }
-
 }
