@@ -36,4 +36,11 @@ public class DocenteDtoMapper {
                                 .toList() : null
         );
     }
+
+    public void updateDocente(Docente existente, DocenteRequest nuevo) {
+        existente.setNombre(nuevo.nombre());
+        existente.setHorasContratadas(nuevo.horasContratadas());
+        existente.setHorasMaximasPorDia(nuevo.horasMaximasPorDia());
+        // No se actualizan las restricciones aquí, ya que se manejan por separado
+    }
 }

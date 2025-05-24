@@ -4,6 +4,7 @@ import elp.edu.pe.horario.application.dto.HorarioDto;
 import elp.edu.pe.horario.application.mapper.HorarioDtoMapper;
 import elp.edu.pe.horario.domain.repository.AsignacionHorarioRepository;
 import elp.edu.pe.horario.shared.exception.BadRequest;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -12,16 +13,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ObtenerHorariosUseCase {
 
     private final static Logger logger = LoggerFactory.getLogger(ObtenerHorariosUseCase.class);
     private final AsignacionHorarioRepository asignacionHorarioRepository;
     private final HorarioDtoMapper horarioDtoMapper;
-
-    public ObtenerHorariosUseCase(AsignacionHorarioRepository asignacionHorarioRepository, HorarioDtoMapper horarioDtoMapper) {
-        this.asignacionHorarioRepository = asignacionHorarioRepository;
-        this.horarioDtoMapper = horarioDtoMapper;
-    }
 
     public List<HorarioDto> obtenerHorariosPorSeccion(UUID seccionID) {
         if(seccionID == null) {
@@ -52,5 +49,4 @@ public class ObtenerHorariosUseCase {
                 .map(horarioDtoMapper::toDto)
                 .toList();
     }
-
 }

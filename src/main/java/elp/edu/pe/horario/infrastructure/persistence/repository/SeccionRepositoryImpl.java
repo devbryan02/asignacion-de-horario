@@ -46,4 +46,9 @@ public class SeccionRepositoryImpl implements SeccionRepository {
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
+
+    @Override
+    public void update(Seccion seccion) {
+        jpaRepository.save(mapper.toEntity(seccion));
+    }
 }

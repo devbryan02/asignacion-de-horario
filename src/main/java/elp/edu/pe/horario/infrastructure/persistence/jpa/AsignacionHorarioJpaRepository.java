@@ -14,4 +14,6 @@ public interface AsignacionHorarioJpaRepository extends JpaRepository<Asignacion
 
     List<AsignacionHorarioEntity> findByCursoSeccion_Seccion_Periodo_Id(UUID periodoId);
 
+    boolean existsByDocenteId(UUID docenteId);
+
 }

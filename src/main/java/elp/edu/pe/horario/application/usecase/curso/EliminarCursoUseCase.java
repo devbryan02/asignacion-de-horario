@@ -21,21 +21,32 @@ public class EliminarCursoUseCase {
         this.cursoRepository = cursoRepository;
     }
 
-    public void ejecutar(UUID id){
-        try{
-            if(id == null) throw new BadRequest("ID no puede ser nulo");
+    public void ejecutar(UUID id) {
+        try {
+            if (id == null) throw new BadRequest("ID no puede ser nulo");
 
             Curso curso = cursoRepository
                     .findById(id)
                     .orElseThrow(() -> new NotFoundException("Curso no encontrado"));
 
+            // Verificar referencias en curso_seccion
+            boolean tieneReferencias = cursoRepository.existeReferenciaEnCursoSeccion(id);
+            log.info("¿Tiene referencias en curso_seccion?: {}", tieneReferencias);
+            if (tieneReferencias) {
+                throw new DeleteException("No se puede eliminar el curso porque está siendo utilizado en secciones.");
+            }
+
             cursoRepository.deleteById(id);
-
             log.info("Curso eliminado: {}", curso);
-        }catch (Exception e){
-            log.error("Error al eliminar el curso", e);
-            throw new DeleteException("Error al eliminar el docente");
-        }
 
+        } catch (BadRequest | NotFoundException | DeleteException e) {
+            // Manejar excepciones específicas
+            log.error("Error controlado: {}", e.getMessage());
+            throw e; // Relanzar la excepción específica
+        } catch (Exception e) {
+            // Manejar cualquier otro error inesperado
+            log.error("Error inesperado al eliminar el curso", e);
+            throw new DeleteException("Error inesperado al eliminar el curso");
+        }
     }
 }

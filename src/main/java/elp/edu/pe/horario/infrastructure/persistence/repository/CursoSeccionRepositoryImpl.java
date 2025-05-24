@@ -52,4 +52,9 @@ public class CursoSeccionRepositoryImpl implements CursoSeccionRepository {
     public void saveAll(List<CursoSeccion> cursoSecciones) {
         jpaRepository.saveAllAndFlush(cursoSecciones.stream().map(mapper::toEntity).toList());
     }
+
+    @Override
+    public boolean existsByCursoAndSeccion(UUID cursoId, UUID seccionId) {
+        return jpaRepository.existsByCursoIdAndSeccionId(cursoId, seccionId);
+    }
 }

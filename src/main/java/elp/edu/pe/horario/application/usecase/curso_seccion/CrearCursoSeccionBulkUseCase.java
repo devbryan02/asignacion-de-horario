@@ -35,19 +35,33 @@ public class CrearCursoSeccionBulkUseCase {
 
     public RegistroResponse ejecutar(CursoSeccionBulkRequest request) {
         try {
+            // Obtener el curso
             Curso curso = cursoRepository.findById(request.cursoId())
                     .orElseThrow(() -> new NotFoundException("Curso no encontrado"));
 
-            List<CursoSeccion> relaciones = request.seccionesIds().stream().map(seccionId -> {
-                Seccion seccion = seccionRepository.findById(seccionId)
-                        .orElseThrow(() -> new NotFoundException("Sección no encontrada: " + seccionId));
-                return mapper.toDomainFromBulk(request, curso, seccion);
-            }).toList();
+            // Comprobar existencia de relaciones antes de intentar crearlas
+            List<CursoSeccion> relaciones = request.seccionesIds().stream()
+                    .map(seccionId -> {
+                        Seccion seccion = seccionRepository.findById(seccionId)
+                                .orElseThrow(() -> new NotFoundException("Sección no encontrada: " + seccionId));
+                        // Validar si la relación ya existe
+                        if (cursoSeccionRepository.existsByCursoAndSeccion(curso.getId(), seccion.getId())) {
+                            throw new IllegalArgumentException(
+                                    String.format("La sección '%s' ya está asignada al curso '%s'. Verifique los datos e intente nuevamente.",
+                                            seccion.getNombre(), curso.getNombre()));
+                        }
+                        // Mapeo de la nueva relación
+                        return mapper.toDomainFromBulk(request, curso, seccion);
+                    }).toList();
 
+            // Guardar las nuevas relaciones
             cursoSeccionRepository.saveAll(relaciones);
             log.info("Relaciones curso-sección creadas: {}", relaciones.size());
             return RegistroResponse.success("Se registraron " + relaciones.size() + " relaciones curso-sección correctamente");
 
+        } catch (IllegalArgumentException e) {
+            log.warn("Validación fallida: {}", e.getMessage());
+            return RegistroResponse.failure(e.getMessage());
         } catch (Exception e) {
             log.error("Error al crear relaciones curso-sección: {}", e.getMessage());
             return RegistroResponse.failure("Error al registrar relaciones curso-sección");

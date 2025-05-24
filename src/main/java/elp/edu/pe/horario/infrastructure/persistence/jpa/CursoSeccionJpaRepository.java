@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface CursoSeccionJpaRepository extends JpaRepository<CursoSeccionEntity, UUID> {
+
+    boolean existsByCursoIdAndSeccionId(UUID cursoId, UUID seccionId);
 }

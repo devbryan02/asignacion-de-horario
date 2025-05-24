@@ -54,4 +54,9 @@ public class RestriccionDocenteRepositoryImpl implements RestriccionDocenteRepos
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public boolean existsByDocenteId(UUID docenteId) {
+        return jpaRepository.existsByDocenteId(docenteId);
+    }
 }

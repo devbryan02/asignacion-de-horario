@@ -44,5 +44,15 @@ public class BloqueHorarioRepositoryImpl implements BloqueHorarioRepository {
                 .toList();
     }
 
+    @Override
+    public void update(BloqueHorario bloqueHorario) {
+        jpaRepository.save(mapper.toEntity(bloqueHorario));
+    }
+
+    @Override
+    public boolean existeReferenciaEnAsignacionHorario(UUID id) {
+        return jpaRepository.existeReferenciaEnAsignacionHorario(id);
+    }
+
 
 }

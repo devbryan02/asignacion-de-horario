@@ -11,4 +11,6 @@ public interface RestriccionDocenteJpaRepository extends JpaRepository<Restricci
     // Consultas personalizadas pueden ser añadidas aquí
     List<RestriccionDocenteEntity> findAllByDocenteId(UUID docenteId);
 
+    boolean existsByDocenteId(UUID docenteId);
+
 }

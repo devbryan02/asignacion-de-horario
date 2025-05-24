@@ -5,6 +5,7 @@ import elp.edu.pe.horario.application.dto.request.AulaRequest;
 import elp.edu.pe.horario.application.dto.response.RegistroResponse;
 import elp.edu.pe.horario.application.usecase.aula.ActualizarAulaUseCase;
 import elp.edu.pe.horario.application.usecase.aula.CrearAulaUsecase;
+import elp.edu.pe.horario.application.usecase.aula.EliminarAulaUseCase;
 import elp.edu.pe.horario.application.usecase.aula.ObtenerAulasUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +21,13 @@ public class AulaController {
     private final CrearAulaUsecase crearAulaUsecase;
     private final ObtenerAulasUseCase obtenerAulasUseCase;
     private final ActualizarAulaUseCase actualizarAulaUseCase;
+    private final EliminarAulaUseCase eliminarAulaUseCase;
 
-    public AulaController(CrearAulaUsecase crearAulaUsecase, ObtenerAulasUseCase obtenerAulasUseCase, ActualizarAulaUseCase actualizarAulaUseCase ) {
+    public AulaController(CrearAulaUsecase crearAulaUsecase, ObtenerAulasUseCase obtenerAulasUseCase, ActualizarAulaUseCase actualizarAulaUseCase, EliminarAulaUseCase eliminarAulaUseCase) {
         this.crearAulaUsecase = crearAulaUsecase;
         this.obtenerAulasUseCase = obtenerAulasUseCase;
         this.actualizarAulaUseCase = actualizarAulaUseCase;
+        this.eliminarAulaUseCase = eliminarAulaUseCase;
     }
 
     @PostMapping
@@ -49,6 +52,12 @@ public class AulaController {
     public ResponseEntity<RegistroResponse> actualizarAula(@PathVariable UUID id, @RequestBody AulaRequest request){
         RegistroResponse response = actualizarAulaUseCase.ejecutar(request, id);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> eliminarAula(@PathVariable UUID id){
+        eliminarAulaUseCase.ejecutar(id);
+        return ResponseEntity.ok("Aula eliminada correctamente");
     }
 
 }

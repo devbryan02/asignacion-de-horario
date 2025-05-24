@@ -8,8 +8,6 @@ import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.config.constructionheuristic.ConstructionHeuristicPhaseConfig;
 import org.optaplanner.core.config.localsearch.LocalSearchPhaseConfig;
 import org.optaplanner.core.config.solver.SolverConfig;
-import org.optaplanner.core.config.solver.monitoring.MonitoringConfig;
-import org.optaplanner.core.config.solver.monitoring.SolverMetric;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

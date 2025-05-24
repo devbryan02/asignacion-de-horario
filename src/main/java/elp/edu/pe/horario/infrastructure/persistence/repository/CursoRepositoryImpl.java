@@ -46,4 +46,14 @@ public class CursoRepositoryImpl implements CursoRepository {
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
+
+    @Override
+    public void update(Curso curso) {
+        jpaRepository.save(mapper.toEntity(curso));
+    }
+
+    @Override
+    public boolean existeReferenciaEnCursoSeccion(UUID id) {
+        return jpaRepository.existeReferenciaEnCursoSeccion(id);
+    }
 }

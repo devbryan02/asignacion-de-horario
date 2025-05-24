@@ -18,7 +18,6 @@ public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioReposit
     private final AsignacionHorarioJpaRepository jpaRepository;
     private final AsignacionMapper mapper;
     private final EntityManager entityManager;
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(AsignacionHorarioRepositoryImpl.class);
 
     public AsignacionHorarioRepositoryImpl(AsignacionHorarioJpaRepository jpaRepository, AsignacionMapper mapper, EntityManager entityManager) {
         this.jpaRepository = jpaRepository;
@@ -57,11 +56,15 @@ public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioReposit
 
     @Override
     public List<AsignacionHorario> findByPeriodoId(UUID periodoId) {
-        return jpaRepository.findByCursoSeccion_Seccion_Id(periodoId)
+        return jpaRepository.findByCursoSeccion_Seccion_Periodo_Id(periodoId)
                 .stream()
                 .map(mapper::toDomain)
                 .toList();
     }
 
+    @Override
+    public boolean existeReferenciaDocente(UUID id) {
+        return jpaRepository.existsByDocenteId(id);
+    }
 
 }

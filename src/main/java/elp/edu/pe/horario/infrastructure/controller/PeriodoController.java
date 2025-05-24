@@ -4,6 +4,7 @@ import elp.edu.pe.horario.application.dto.PeriodoDto;
 import elp.edu.pe.horario.application.dto.request.PeriodoRequest;
 import elp.edu.pe.horario.application.dto.response.RegistroResponse;
 import elp.edu.pe.horario.application.usecase.periodo.CrearPeriodoUseCase;
+import elp.edu.pe.horario.application.usecase.periodo.EliminarPeriodoUseCase;
 import elp.edu.pe.horario.application.usecase.periodo.ObtenerPeriodosUsecase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +19,14 @@ public class PeriodoController {
 
     private final CrearPeriodoUseCase crearPeriodoUseCase;
     private final ObtenerPeriodosUsecase obtenerPeriodos;
+    private final EliminarPeriodoUseCase eliminarPeriodoUseCase;
 
-    public PeriodoController(CrearPeriodoUseCase crearPeriodoUseCase, ObtenerPeriodosUsecase obtenerPeriodos) {
+    public PeriodoController(CrearPeriodoUseCase crearPeriodoUseCase,
+                             ObtenerPeriodosUsecase obtenerPeriodos,
+                             EliminarPeriodoUseCase eliminarPeriodoUseCase) {
         this.crearPeriodoUseCase = crearPeriodoUseCase;
         this.obtenerPeriodos = obtenerPeriodos;
+        this.eliminarPeriodoUseCase = eliminarPeriodoUseCase;
     }
 
     @PostMapping
@@ -40,5 +45,11 @@ public class PeriodoController {
     public ResponseEntity<Optional<PeriodoDto>> obtenerPeriodoPorId(@PathVariable UUID id){
         Optional<PeriodoDto> periodo = obtenerPeriodos.obtenerPeriodoPorId(id);
         return ResponseEntity.ok(periodo);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> eliminarPeriodo(@PathVariable UUID id){
+        eliminarPeriodoUseCase.ejecutar(id);
+        return ResponseEntity.ok("Periodo eliminado correctamente");
     }
 }

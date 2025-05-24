@@ -13,4 +13,6 @@ public interface CursoSeccionRepository {
     CursoSeccion save(CursoSeccion curso);
     void deleteById(UUID id);
     void saveAll(List<CursoSeccion> cursoSecciones);
+    boolean existsByCursoAndSeccion(UUID cursoId, UUID seccionId);
+
 }

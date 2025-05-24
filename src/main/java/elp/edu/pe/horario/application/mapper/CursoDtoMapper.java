@@ -30,4 +30,11 @@ public class CursoDtoMapper {
                 curso.getUnidad().getNombre()
         );
     }
+
+    public void updateCurso(Curso existente, CursoRequest nuevo){
+        existente.setNombre(nuevo.nombre());
+        existente.setHorasSemanales(nuevo.horasSemanales());
+        existente.setTipo(nuevo.tipo());
+        // No se actualiza la unidad, ya que no se permite cambiarla
+    }
 }

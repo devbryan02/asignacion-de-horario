@@ -45,4 +45,10 @@ public class DocenteRepositoryImpl implements DocenteRepository {
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
+
+    @Override
+    public void update(Docente docente) {
+        jpaRepository.save(mapper.toEntity(docente));
+    }
+
 }

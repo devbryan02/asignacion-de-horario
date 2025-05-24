@@ -15,27 +15,34 @@ import java.util.UUID;
 public class EliminarAulaUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(EliminarAulaUseCase.class);
-    private final AulaRepository aulaRepository;;
+    private final AulaRepository aulaRepository;
 
     public EliminarAulaUseCase(AulaRepository aulaRepository) {
         this.aulaRepository = aulaRepository;
     }
 
     public void ejecutar(UUID id) {
-        try{
-            if(id == null) throw new BadRequest("ID no puede ser nulo");
+        try {
+            if (id == null) throw new BadRequest("ID no puede ser nulo");
 
             Aula aula = aulaRepository
                     .findById(id)
                     .orElseThrow(() -> new NotFoundException("Aula no encontrada"));
 
-            aulaRepository.deleteById(id);
+            // Verificar referencias en asignacion_horario
+            boolean tieneReferencias = aulaRepository.existeReferenciaEnAsignacionHorario(id);
+            if (tieneReferencias) {
+                throw new DeleteException("No se puede eliminar el aula porque está siendo utilizada en asignaciones de horario.");
+            }
 
+            aulaRepository.deleteById(id);
             log.info("Aula eliminada: {}", aula);
-        }catch (Exception e){
-            log.error("Error al eliminar el aula", e);
-            throw new DeleteException("Error al eliminar el docente");
+        } catch (DeleteException e) {
+            log.error("Error al eliminar el aula: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Error inesperado al eliminar el aula", e);
+            throw new DeleteException("Error al eliminar el aula");
         }
     }
-
 }

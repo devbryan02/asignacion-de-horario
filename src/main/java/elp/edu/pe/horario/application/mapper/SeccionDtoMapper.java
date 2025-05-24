@@ -23,4 +23,8 @@ public class SeccionDtoMapper {
                 seccion.getPeriodo().getNombre()
         );
     }
+
+    public void toUpdate(Seccion existente, SeccionRequest nuevo){
+        existente.setNombre(nuevo.nombre());
+    }
 }

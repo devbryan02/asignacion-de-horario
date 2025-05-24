@@ -13,5 +13,6 @@ public interface AulaRepository {
     Aula save(Aula aula);
     void deleteById(UUID id);
     void update(Aula aula);
+    boolean existeReferenciaEnAsignacionHorario(UUID id);
 
 }

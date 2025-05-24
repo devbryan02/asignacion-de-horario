@@ -44,7 +44,8 @@ public class CrearRestriccionUsecase {
 
             // Aquí las horas ya son LocalTime, no es necesario convertirlas
             for (RestriccionDocente existente : restriccionesExistentes) {
-                // Usamos el método existeTraslape para verificar si hay un traslape
+
+                // Usamos el método existeTraslape para verificar si hay traslape
                 if (existeTraslape(existente, request)) {
                     // Si hay traslape, mostramos el mensaje con los detalles
                     String mensaje = String.format(

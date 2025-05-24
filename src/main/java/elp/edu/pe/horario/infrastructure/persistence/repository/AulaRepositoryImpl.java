@@ -50,4 +50,9 @@ public class AulaRepositoryImpl implements AulaRepository {
     public void update(Aula aula) {
         aulaJpaRepository.save(mapper.toEntity(aula));
     }
+
+    @Override
+    public boolean existeReferenciaEnAsignacionHorario(UUID id) {
+        return aulaJpaRepository.existeReferenciaEnAsignacionHorario(id);
+    }
 }

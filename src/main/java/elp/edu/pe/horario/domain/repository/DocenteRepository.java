@@ -12,4 +12,6 @@ public interface DocenteRepository {
     Optional<Docente> findById(UUID id);
     Docente save(Docente docente);
     void deleteById(UUID id);
+    void update(Docente docente);
+
 }

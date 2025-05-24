@@ -14,4 +14,6 @@ public interface RestriccionDocenteRepository {
     void deleteById(UUID id);
     List<RestriccionDocente> findAllByDocenteId(UUID docenteId);
 
+    boolean existsByDocenteId(UUID docenteId);
+
 }

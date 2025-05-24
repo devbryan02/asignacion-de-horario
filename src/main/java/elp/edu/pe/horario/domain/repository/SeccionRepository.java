@@ -12,4 +12,5 @@ public interface SeccionRepository {
     Seccion save(Seccion seccion);
     Optional<Seccion> findById(UUID id);
     void deleteById(UUID id);
+    void update(Seccion seccion);
 }

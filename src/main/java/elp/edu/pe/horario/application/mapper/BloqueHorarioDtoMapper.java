@@ -30,4 +30,11 @@ public class BloqueHorarioDtoMapper {
                 bloqueHorario.getTurno()
         );
     }
+
+    public void updateBloque(BloqueHorario existente, BloqueRequest nuevo) {
+        existente.setDiaSemana(DiaSemana.valueOf(nuevo.diaSemana()));
+        existente.setHoraInicio(nuevo.horaInicio());
+        existente.setHoraFin(nuevo.horaFin());
+        existente.setTurno(Turno.valueOf(nuevo.turno()));
+    }
 }

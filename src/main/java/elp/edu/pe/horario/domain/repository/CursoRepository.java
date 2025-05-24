@@ -12,4 +12,6 @@ public interface CursoRepository {
     Optional<Curso> findById(UUID id);
     Curso save(Curso curso);
     void deleteById(UUID id);
+    void update(Curso curso);
+    boolean existeReferenciaEnCursoSeccion(UUID id);
 }
