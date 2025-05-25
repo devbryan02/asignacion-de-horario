@@ -10,6 +10,7 @@ import elp.edu.pe.horario.domain.repository.CursoRepository;
 import elp.edu.pe.horario.domain.repository.CursoSeccionRepository;
 import elp.edu.pe.horario.domain.repository.SeccionRepository;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class CrearCursoSeccionBulkUseCase {
         this.mapper = mapper;
     }
 
+    @Transactional
     public RegistroResponse ejecutar(CursoSeccionBulkRequest request) {
         try {
             // Obtener el curso

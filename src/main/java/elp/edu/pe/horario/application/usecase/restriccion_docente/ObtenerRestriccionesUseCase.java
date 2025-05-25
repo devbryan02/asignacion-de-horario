@@ -4,6 +4,7 @@ import elp.edu.pe.horario.application.dto.RestriccionDocenteDto;
 import elp.edu.pe.horario.application.mapper.RestriccionDtoMapper;
 import elp.edu.pe.horario.domain.repository.RestriccionDocenteRepository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class ObtenerRestriccionesUseCase {
                 .map(mapper::toDto);
     }
 
+    @Transactional
     public List<RestriccionDocenteDto> obtenerRestriccionesPorDocente(UUID docenteId){
         return restriccionDocenteRepository.findAllByDocenteId(docenteId)
                 .stream()

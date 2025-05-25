@@ -2,9 +2,12 @@ package elp.edu.pe.horario.application.usecase.curso;
 
 import elp.edu.pe.horario.domain.model.Curso;
 import elp.edu.pe.horario.domain.repository.CursoRepository;
+import elp.edu.pe.horario.domain.repository.CursoSeccionRepository;
 import elp.edu.pe.horario.shared.exception.BadRequest;
 import elp.edu.pe.horario.shared.exception.DeleteException;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -12,15 +15,14 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class EliminarCursoUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(EliminarCursoUseCase.class);
     private final CursoRepository cursoRepository;
+    private final CursoSeccionRepository cursoSeccionRepository;
 
-    public EliminarCursoUseCase(CursoRepository cursoRepository) {
-        this.cursoRepository = cursoRepository;
-    }
-
+    @Transactional
     public void ejecutar(UUID id) {
         try {
             if (id == null) throw new BadRequest("ID no puede ser nulo");
@@ -30,7 +32,7 @@ public class EliminarCursoUseCase {
                     .orElseThrow(() -> new NotFoundException("Curso no encontrado"));
 
             // Verificar referencias en curso_seccion
-            boolean tieneReferencias = cursoRepository.existeReferenciaEnCursoSeccion(id);
+            boolean tieneReferencias = cursoSeccionRepository.existsByCursoId(id);
             log.info("¿Tiene referencias en curso_seccion?: {}", tieneReferencias);
             if (tieneReferencias) {
                 throw new DeleteException("No se puede eliminar el curso porque está siendo utilizado en secciones.");

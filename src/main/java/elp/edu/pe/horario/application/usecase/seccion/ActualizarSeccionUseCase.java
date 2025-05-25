@@ -7,6 +7,7 @@ import elp.edu.pe.horario.domain.model.Seccion;
 import elp.edu.pe.horario.domain.repository.SeccionRepository;
 import elp.edu.pe.horario.shared.exception.BadRequest;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ public class ActualizarSeccionUseCase {
     private final SeccionRepository seccionRepository;
     private final SeccionDtoMapper seccionDtoMapper;
 
-
+    @Transactional
     public RegistroResponse ejecutar(SeccionRequest nuevo, UUID seccionId){
         try{
 

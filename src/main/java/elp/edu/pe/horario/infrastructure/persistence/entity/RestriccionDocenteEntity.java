@@ -32,5 +32,4 @@ public class RestriccionDocenteEntity {
     @JoinColumn(name = "docente_id", nullable = false)
     private DocenteEntity docente;
 
-
 }

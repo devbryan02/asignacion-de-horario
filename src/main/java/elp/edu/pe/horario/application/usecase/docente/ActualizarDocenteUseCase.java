@@ -6,6 +6,7 @@ import elp.edu.pe.horario.application.mapper.DocenteDtoMapper;
 import elp.edu.pe.horario.domain.model.Docente;
 import elp.edu.pe.horario.domain.repository.DocenteRepository;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,14 @@ public class ActualizarDocenteUseCase {
         this.docenteMapper = docenteMapper;
     }
 
+    @Transactional
     public RegistroResponse ejecutar(DocenteRequest nuevo, UUID id){
         try{
             Docente docenteExistente = docenteRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Docente no encontrado"));
             docenteMapper.updateDocente(docenteExistente, nuevo);
             docenteRepository.update(docenteExistente);
+            log.info("Docente actualizado correctamente: {}", docenteExistente);
             return RegistroResponse.success("Docente actualizado correctamente");
         }catch (Exception e){
             log.error("Error al actualizar el docente: {}", e.getMessage());

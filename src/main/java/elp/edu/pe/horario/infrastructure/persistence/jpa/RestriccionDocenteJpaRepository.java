@@ -4,6 +4,7 @@ import elp.edu.pe.horario.infrastructure.persistence.entity.RestriccionDocenteEn
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface RestriccionDocenteJpaRepository extends JpaRepository<RestriccionDocenteEntity, UUID> {
@@ -12,5 +13,6 @@ public interface RestriccionDocenteJpaRepository extends JpaRepository<Restricci
     List<RestriccionDocenteEntity> findAllByDocenteId(UUID docenteId);
 
     boolean existsByDocenteId(UUID docenteId);
+
 
 }

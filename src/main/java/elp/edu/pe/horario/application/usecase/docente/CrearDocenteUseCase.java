@@ -7,6 +7,7 @@ import elp.edu.pe.horario.domain.model.Docente;
 import elp.edu.pe.horario.domain.model.UnidadAcademica;
 import elp.edu.pe.horario.domain.repository.DocenteRepository;
 import elp.edu.pe.horario.domain.repository.UnidadRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,18 +16,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CrearDocenteUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(CrearDocenteUseCase.class);
     private final DocenteRepository docenteRepository;
     private final DocenteDtoMapper mapper;
     private final UnidadRepository unidadRepository;
-
-    public CrearDocenteUseCase(DocenteRepository docenteRepository, DocenteDtoMapper mapper, UnidadRepository unidadRepository) {
-        this.docenteRepository = docenteRepository;
-        this.mapper = mapper;
-        this.unidadRepository = unidadRepository;
-    }
 
     public RegistroResponse ejecutar(DocenteRequest request) {
         try{
@@ -41,6 +37,7 @@ public class CrearDocenteUseCase {
                 docente.setUnidadesAcademicas(unidades);
             }
             docenteRepository.save(docente);
+            log.info("Docente y unidades académicas asociadas creados correctamente: {}", docente);
             return RegistroResponse.success("Docente creado correctamente");
         }catch (Exception e){
             log.error("Error al crear el docente", e);

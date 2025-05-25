@@ -57,4 +57,14 @@ public class CursoSeccionRepositoryImpl implements CursoSeccionRepository {
     public boolean existsByCursoAndSeccion(UUID cursoId, UUID seccionId) {
         return jpaRepository.existsByCursoIdAndSeccionId(cursoId, seccionId);
     }
+
+    @Override
+    public boolean existsByCursoId(UUID cursoId) {
+        return jpaRepository.existsByCursoId(cursoId) ;
+    }
+
+    @Override
+    public boolean existsBySeccionId(UUID seccionId) {
+        return jpaRepository.existsBySeccionId(seccionId) ;
+    }
 }

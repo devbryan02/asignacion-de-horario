@@ -3,6 +3,7 @@ package elp.edu.pe.horario.application.usecase.seccion;
 import elp.edu.pe.horario.application.dto.SeccionDto;
 import elp.edu.pe.horario.application.mapper.SeccionDtoMapper;
 import elp.edu.pe.horario.domain.repository.SeccionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ObtenerSeccionesUseCase {
         this.seccionDtoMapper = seccionDtoMapper;
     }
 
+    @Transactional
     public List<SeccionDto> obtenerSecciones() {
         return seccionRepository.findAll()
                 .stream()
@@ -27,6 +29,7 @@ public class ObtenerSeccionesUseCase {
                 .toList();
     }
 
+    @Transactional
     public Optional<SeccionDto> obtenerSeccionPorId(UUID id) {
         return seccionRepository.findById(id)
                 .map(seccionDtoMapper::toDto);

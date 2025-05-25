@@ -3,6 +3,7 @@ package elp.edu.pe.horario.application.usecase.unidad;
 import elp.edu.pe.horario.application.dto.UnidadDto;
 import elp.edu.pe.horario.application.mapper.UnidadDtoMapper;
 import elp.edu.pe.horario.domain.repository.UnidadRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ObtenerUnidadesUseCase {
         this.unidadDtoMapper = unidadDtoMapper;
     }
 
+    @Transactional
     public List<UnidadDto> obtenerUnidades(){
         return unidadRepository.findAll()
                 .stream()

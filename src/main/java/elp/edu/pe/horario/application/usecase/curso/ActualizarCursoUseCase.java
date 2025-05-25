@@ -6,6 +6,7 @@ import elp.edu.pe.horario.application.mapper.CursoDtoMapper;
 import elp.edu.pe.horario.domain.model.Curso;
 import elp.edu.pe.horario.domain.repository.CursoRepository;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class ActualizarCursoUseCase {
         this.cursoDtoMapper = cursoDtoMapper;
     }
 
+    @Transactional
     public RegistroResponse ejecutar(CursoRequest cursoNuevo, UUID cursoId){
         try {
             Curso cursoExistente = cursoRepository.findById(cursoId)

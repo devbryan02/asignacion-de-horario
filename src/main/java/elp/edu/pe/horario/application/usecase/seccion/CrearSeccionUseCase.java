@@ -8,6 +8,7 @@ import elp.edu.pe.horario.domain.model.Seccion;
 import elp.edu.pe.horario.domain.repository.PeriodoRepository;
 import elp.edu.pe.horario.domain.repository.SeccionRepository;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

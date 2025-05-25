@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface CursoSeccionJpaRepository extends JpaRepository<CursoSeccionEntity, UUID> {
 
     boolean existsByCursoIdAndSeccionId(UUID cursoId, UUID seccionId);
+    boolean existsByCursoId(UUID cursoId);
+    boolean existsBySeccionId(UUID seccionId);
 }

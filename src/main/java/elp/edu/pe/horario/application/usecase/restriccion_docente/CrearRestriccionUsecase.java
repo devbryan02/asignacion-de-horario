@@ -9,6 +9,7 @@ import elp.edu.pe.horario.domain.model.RestriccionDocente;
 import elp.edu.pe.horario.domain.repository.DocenteRepository;
 import elp.edu.pe.horario.domain.repository.RestriccionDocenteRepository;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,20 +19,13 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CrearRestriccionUsecase {
 
     private static final Logger log = LoggerFactory.getLogger(CrearRestriccionUsecase.class);
     private final RestriccionDocenteRepository restriccionRepository;
     private final RestriccionDtoMapper mapper;
     private final DocenteRepository docenteRepository;
-
-    public CrearRestriccionUsecase(RestriccionDocenteRepository restriccionRepository,
-                                   RestriccionDtoMapper mapper,
-                                   DocenteRepository docenteRepository) {
-        this.restriccionRepository = restriccionRepository;
-        this.mapper = mapper;
-        this.docenteRepository = docenteRepository;
-    }
 
     @Transactional
     public RegistroResponse ejecutar(RestriccionRequest request) {
@@ -45,7 +39,7 @@ public class CrearRestriccionUsecase {
             // Aquí las horas ya son LocalTime, no es necesario convertirlas
             for (RestriccionDocente existente : restriccionesExistentes) {
 
-                // Usamos el método existeTraslape para verificar si hay traslape
+                // Verificamos si hay traslape con la nueva restricción
                 if (existeTraslape(existente, request)) {
                     // Si hay traslape, mostramos el mensaje con los detalles
                     String mensaje = String.format(
@@ -58,7 +52,7 @@ public class CrearRestriccionUsecase {
                     return RegistroResponse.failure(mensaje);
                 }
             }
-
+            // Si no hay traslape, guardamos la nueva restricción
             restriccionRepository.save(nuevaRestriccion);
             log.info("Restricción creada: {}", nuevaRestriccion);
             return RegistroResponse.success("Restricción creada correctamente");
@@ -91,6 +85,5 @@ public class CrearRestriccionUsecase {
                 nuevaHoraInicio.isBefore(horaFinExistente) &&
                 nuevaHoraFin.isAfter(horaInicioExistente);
     }
-
 }
 

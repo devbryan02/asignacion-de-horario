@@ -9,6 +9,7 @@ import elp.edu.pe.horario.shared.exception.BadRequest;
 import elp.edu.pe.horario.shared.exception.CustomException;
 import elp.edu.pe.horario.shared.exception.DeleteException;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class EliminarDocenteUseCase {
         this.restriccionDocenteRepository = restriccionDocenteRepository;
     }
 
+    @Transactional
     public void ejecutar(UUID id) {
         try{
             if(id == null) throw new BadRequest("ID no puede ser nulo");

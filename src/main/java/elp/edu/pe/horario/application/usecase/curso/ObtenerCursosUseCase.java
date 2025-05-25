@@ -3,6 +3,7 @@ package elp.edu.pe.horario.application.usecase.curso;
 import elp.edu.pe.horario.application.dto.CursoDto;
 import elp.edu.pe.horario.application.mapper.CursoDtoMapper;
 import elp.edu.pe.horario.domain.repository.CursoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ObtenerCursosUseCase {
         this.cursoDtoMapper = cursoDtoMapper;
     }
 
+    @Transactional
     public List<CursoDto> obtenerCursos(){
         return cursoRepository.findAll()
                 .stream()

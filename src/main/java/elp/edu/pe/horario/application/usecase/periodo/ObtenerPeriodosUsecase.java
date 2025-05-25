@@ -3,6 +3,7 @@ package elp.edu.pe.horario.application.usecase.periodo;
 import elp.edu.pe.horario.application.dto.PeriodoDto;
 import elp.edu.pe.horario.application.mapper.PeriodoDtoMapper;
 import elp.edu.pe.horario.domain.repository.PeriodoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ObtenerPeriodosUsecase {
         this.mapper = mapper;
     }
 
+    @Transactional
     public List<PeriodoDto> obtenerPeriodos() {
         return periodoRepository.findAll()
                 .stream()
