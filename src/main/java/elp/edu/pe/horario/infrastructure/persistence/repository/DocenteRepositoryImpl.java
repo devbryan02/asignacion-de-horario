@@ -6,6 +6,8 @@ import elp.edu.pe.horario.infrastructure.mapper.DocenteMapper;
 import elp.edu.pe.horario.infrastructure.persistence.entity.DocenteEntity;
 import elp.edu.pe.horario.infrastructure.persistence.jpa.DocenteJpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,6 +39,10 @@ public class DocenteRepositoryImpl implements DocenteRepository {
     @Override
     public Docente save(Docente docente) {
         DocenteEntity entity = mapper.toEntity(docente);
+        // Asegúrate de que la lista de unidades no sea null
+        if (entity.getUnidades() == null) {
+            entity.setUnidades(new ArrayList<>());
+        }
         DocenteEntity savedEntity = jpaRepository.save(entity);
         return mapper.toDomain(savedEntity);
     }

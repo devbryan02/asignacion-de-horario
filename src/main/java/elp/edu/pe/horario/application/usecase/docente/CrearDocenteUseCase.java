@@ -7,6 +7,7 @@ import elp.edu.pe.horario.domain.model.Docente;
 import elp.edu.pe.horario.domain.model.UnidadAcademica;
 import elp.edu.pe.horario.domain.repository.DocenteRepository;
 import elp.edu.pe.horario.domain.repository.UnidadRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ public class CrearDocenteUseCase {
     private final DocenteDtoMapper mapper;
     private final UnidadRepository unidadRepository;
 
+    @Transactional
     public RegistroResponse ejecutar(DocenteRequest request) {
         try{
             Docente docente = mapper.toDomain(request);
