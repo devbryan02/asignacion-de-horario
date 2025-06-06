@@ -6,8 +6,6 @@ import elp.edu.pe.horario.domain.enums.TipoAula;
 import elp.edu.pe.horario.domain.model.Aula;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 public class AulaDtoMapper {
 
