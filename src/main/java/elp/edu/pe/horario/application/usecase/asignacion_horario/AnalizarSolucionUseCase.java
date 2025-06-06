@@ -2,6 +2,7 @@ package elp.edu.pe.horario.application.usecase.asignacion_horario;
 
 
 import elp.edu.pe.horario.domain.model.AsignacionHorario;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class AnalizarSolucionUseCase {
 
     public int obtenerCantidadAsignaciones(List<AsignacionHorario> asignaciones) {

@@ -12,5 +12,6 @@ public interface PeriodoRepository {
     Optional<PeriodoAcademico> findById(UUID id);
     PeriodoAcademico save(PeriodoAcademico periodo);
     void deleteById(UUID id);
+    void actualizar(PeriodoAcademico periodo);
 
 }

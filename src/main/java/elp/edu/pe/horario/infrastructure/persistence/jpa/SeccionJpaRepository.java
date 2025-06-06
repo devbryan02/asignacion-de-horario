@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface SeccionJpaRepository extends JpaRepository<SeccionEntity, UUID> {
 
+    boolean existsByPeriodoId(UUID periodoId);
 
 }

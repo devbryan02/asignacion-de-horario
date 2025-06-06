@@ -45,4 +45,9 @@ public class PeriodoRepositoryImpl implements PeriodoRepository {
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
+
+    @Override
+    public void actualizar(PeriodoAcademico periodo) {
+        jpaRepository.save(mapper.toEntity(periodo));
+    }
 }

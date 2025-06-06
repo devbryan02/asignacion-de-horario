@@ -4,6 +4,7 @@ import elp.edu.pe.horario.domain.model.BloqueHorario;
 import elp.edu.pe.horario.domain.repository.BloqueHorarioRepository;
 import elp.edu.pe.horario.shared.exception.DeleteException;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ public class EliminarBloqueUseCase {
         this.bloqueHorarioRepository = bloqueHorarioRepository;
     }
 
+    @Transactional
     public void ejecutar(UUID id){
         try{
 

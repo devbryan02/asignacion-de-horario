@@ -4,6 +4,7 @@ import elp.edu.pe.horario.application.dto.HorarioDto;
 import elp.edu.pe.horario.application.mapper.HorarioDtoMapper;
 import elp.edu.pe.horario.domain.repository.AsignacionHorarioRepository;
 import elp.edu.pe.horario.shared.exception.BadRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ObtenerHorariosUseCase {
 
     private final static Logger logger = LoggerFactory.getLogger(ObtenerHorariosUseCase.class);

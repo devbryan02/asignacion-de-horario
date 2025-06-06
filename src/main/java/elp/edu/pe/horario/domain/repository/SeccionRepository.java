@@ -13,4 +13,5 @@ public interface SeccionRepository {
     Optional<Seccion> findById(UUID id);
     void deleteById(UUID id);
     void update(Seccion seccion);
+    boolean existsByPeriodoId(UUID periodoId);
 }

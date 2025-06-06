@@ -51,4 +51,9 @@ public class SeccionRepositoryImpl implements SeccionRepository {
     public void update(Seccion seccion) {
         jpaRepository.save(mapper.toEntity(seccion));
     }
+
+    @Override
+    public boolean existsByPeriodoId(UUID periodoId) {
+        return jpaRepository.existsByPeriodoId(periodoId) ;
+    }
 }

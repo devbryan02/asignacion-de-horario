@@ -7,6 +7,7 @@ import elp.edu.pe.horario.application.usecase.bloque_horario.ActualizarBloqueUse
 import elp.edu.pe.horario.application.usecase.bloque_horario.CrearBloqueUseCase;
 import elp.edu.pe.horario.application.usecase.bloque_horario.EliminarBloqueUseCase;
 import elp.edu.pe.horario.application.usecase.bloque_horario.ObtenerBloquesUseCase;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,22 +18,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/bloque-horario")
+@RequiredArgsConstructor
 public class BloqueController {
 
     private final CrearBloqueUseCase crearBloqueUseCase;
     private final ObtenerBloquesUseCase obtenerBloquesUseCase;
     private final ActualizarBloqueUsecase actualizarBloqueUsecase;
     private final EliminarBloqueUseCase eliminarBloqueUseCase;
-
-    public BloqueController(CrearBloqueUseCase crearBloqueUseCase,
-                            ObtenerBloquesUseCase obtenerBloquesUseCase,
-                            ActualizarBloqueUsecase actualizarBloqueUsecase,
-                            EliminarBloqueUseCase eliminarBloqueUseCase) {
-        this.crearBloqueUseCase = crearBloqueUseCase;
-        this.obtenerBloquesUseCase = obtenerBloquesUseCase;
-        this.actualizarBloqueUsecase = actualizarBloqueUsecase;
-        this.eliminarBloqueUseCase = eliminarBloqueUseCase;
-    }
 
     @PostMapping
     public ResponseEntity<RegistroResponse> crearBloque(@RequestBody BloqueRequest request){

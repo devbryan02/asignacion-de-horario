@@ -5,6 +5,7 @@ import elp.edu.pe.horario.domain.model.*;
 import elp.edu.pe.horario.domain.repository.*;
 import elp.edu.pe.horario.domain.solver.HorarioSolucion;
 import elp.edu.pe.horario.domain.solver.HorarioSolucionBuilder;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
 
     private final static Logger log = LoggerFactory.getLogger(HorarioSolucionBuilderImpl.class);

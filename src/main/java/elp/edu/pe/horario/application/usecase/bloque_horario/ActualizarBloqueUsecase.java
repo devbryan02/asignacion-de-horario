@@ -6,6 +6,7 @@ import elp.edu.pe.horario.application.mapper.BloqueHorarioDtoMapper;
 import elp.edu.pe.horario.domain.model.BloqueHorario;
 import elp.edu.pe.horario.domain.repository.BloqueHorarioRepository;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class ActualizarBloqueUsecase {
         this.mapper = mapper;
     }
 
+    @Transactional
     public RegistroResponse ejecutar(BloqueRequest nuevo, UUID bloqueID){
 
         try{

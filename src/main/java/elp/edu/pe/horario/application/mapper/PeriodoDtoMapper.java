@@ -25,4 +25,10 @@ public class PeriodoDtoMapper {
                 periodo.getFechaFin()
         );
     }
+
+    public void updateDomain(PeriodoAcademico existente, PeriodoRequest nuevo) {
+        existente.setNombre(nuevo.nombre());
+        existente.setFechaInicio(nuevo.fechaInicio());
+        existente.setFechaFin(nuevo.fechaFin());
+    }
 }

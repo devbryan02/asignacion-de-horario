@@ -29,6 +29,7 @@ public class HorarioSolverUseCase {
     private final MensajeGeneracionUseCase mostrarMensajeGeneracionUseCase;
     private final AnalizarSolucionUseCase analizarSolucionHorarioUseCase;
 
+    @Transactional
     public GeneracionHorarioResponse ejecutar(HorarioSolucion solucion) throws ExecutionException, InterruptedException {
 
         try {

@@ -3,9 +3,11 @@ package elp.edu.pe.horario.infrastructure.controller;
 import elp.edu.pe.horario.application.dto.PeriodoDto;
 import elp.edu.pe.horario.application.dto.request.PeriodoRequest;
 import elp.edu.pe.horario.application.dto.response.RegistroResponse;
+import elp.edu.pe.horario.application.usecase.periodo.ActualizarPeriodoUsecase;
 import elp.edu.pe.horario.application.usecase.periodo.CrearPeriodoUseCase;
 import elp.edu.pe.horario.application.usecase.periodo.EliminarPeriodoUseCase;
 import elp.edu.pe.horario.application.usecase.periodo.ObtenerPeriodosUsecase;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,19 +17,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/periodo-academico")
+@RequiredArgsConstructor
 public class PeriodoController {
 
     private final CrearPeriodoUseCase crearPeriodoUseCase;
     private final ObtenerPeriodosUsecase obtenerPeriodos;
     private final EliminarPeriodoUseCase eliminarPeriodoUseCase;
-
-    public PeriodoController(CrearPeriodoUseCase crearPeriodoUseCase,
-                             ObtenerPeriodosUsecase obtenerPeriodos,
-                             EliminarPeriodoUseCase eliminarPeriodoUseCase) {
-        this.crearPeriodoUseCase = crearPeriodoUseCase;
-        this.obtenerPeriodos = obtenerPeriodos;
-        this.eliminarPeriodoUseCase = eliminarPeriodoUseCase;
-    }
+    private final ActualizarPeriodoUsecase actualizarPeriodoUsecase;
 
     @PostMapping
     public ResponseEntity<RegistroResponse> crearPeriodo(@RequestBody PeriodoRequest request){
@@ -51,5 +47,11 @@ public class PeriodoController {
     public ResponseEntity<String> eliminarPeriodo(@PathVariable UUID id){
         eliminarPeriodoUseCase.ejecutar(id);
         return ResponseEntity.ok("Periodo eliminado correctamente");
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<RegistroResponse> actualizarPeriodo(@RequestBody PeriodoRequest request, @PathVariable UUID id) {
+        RegistroResponse response = actualizarPeriodoUsecase.ejecutar(request, id);
+        return ResponseEntity.ok(response);
     }
 }

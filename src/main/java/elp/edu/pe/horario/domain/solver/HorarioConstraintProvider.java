@@ -59,24 +59,42 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 .forEach(AsignacionHorario.class)
                 .filter(asignacion -> {
                     Docente docente = asignacion.getDocente();
-                    if (docente == null || docente.getRestricciones() == null) {
-                        return false;
-                    }
-
                     BloqueHorario bloque = asignacion.getBloqueHorario();
-                    if (bloque == null) return false;
 
-                    // Chequeamos si alguna restricción aplica al bloque actual
-                    return docente.getRestricciones().stream().anyMatch(restriccion ->
-                            restriccion.getTipoRestriccion() == TipoRestriccion.BLOQUEADO &&
-                                    restriccion.getDiaSemana() == bloque.getDiaSemana() &&
-                                    bloque.getHoraInicio().isBefore(restriccion.getHoraFin()) &&
-                                    bloque.getHoraFin().isAfter(restriccion.getHoraInicio())
-                    );
+                    return docente != null &&
+                            docente.getRestricciones() != null &&
+                            bloque != null &&
+                            docente.getRestricciones().stream().anyMatch(restriccion ->
+                                    restriccion.getTipoRestriccion() == TipoRestriccion.BLOQUEADO &&
+                                            restriccion.getDiaSemana() == bloque.getDiaSemana() &&
+                                            bloque.getHoraInicio().isBefore(restriccion.getHoraFin()) &&
+                                            bloque.getHoraFin().isAfter(restriccion.getHoraInicio())
+                            );
                 })
-                .penalize(HardSoftScore.ONE_HARD)
-                .asConstraint("Bloque restringido por docente");
+                .penalize(HardSoftScore.ONE_SOFT, asignacion -> {
+                    BloqueHorario bloque = asignacion.getBloqueHorario();
+
+                    return asignacion.getDocente().getRestricciones().stream()
+                            .filter(restriccion ->
+                                    restriccion.getTipoRestriccion() == TipoRestriccion.BLOQUEADO &&
+                                            restriccion.getDiaSemana() == bloque.getDiaSemana() &&
+                                            bloque.getHoraInicio().isBefore(restriccion.getHoraFin()) &&
+                                            bloque.getHoraFin().isAfter(restriccion.getHoraInicio())
+                            )
+                            .mapToInt(restriccion -> {
+                                var inicio = bloque.getHoraInicio().isAfter(restriccion.getHoraInicio())
+                                        ? bloque.getHoraInicio()
+                                        : restriccion.getHoraInicio();
+                                var fin = bloque.getHoraFin().isBefore(restriccion.getHoraFin())
+                                        ? bloque.getHoraFin()
+                                        : restriccion.getHoraFin();
+                                return (int) Duration.between(inicio, fin).toMinutes();
+                            })
+                            .sum();
+                })
+                .asConstraint("Evitar bloques restringidos por docente (suavizado)");
     }
+
 
     private Constraint preferirBloquesDisponibles(ConstraintFactory factory) {
         return factory

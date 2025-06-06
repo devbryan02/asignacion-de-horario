@@ -20,7 +20,10 @@ public class SeccionDtoMapper {
         return new SeccionDto(
                 seccion.getId(),
                 seccion.getNombre(),
-                seccion.getPeriodo().getNombre()
+                seccion.getPeriodo().getNombre(),
+                seccion.getPeriodo().getFechaInicio().toString(),
+                seccion.getPeriodo().getFechaFin().toString()
+
         );
     }
 
