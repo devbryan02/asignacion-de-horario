@@ -2,16 +2,15 @@ package elp.edu.pe.horario.infrastructure.persistence.repository;
 
 import elp.edu.pe.horario.domain.model.AsignacionHorario;
 import elp.edu.pe.horario.domain.repository.AsignacionHorarioRepository;
-
 import elp.edu.pe.horario.infrastructure.mapper.AsignacionMapper;
 import elp.edu.pe.horario.infrastructure.persistence.entity.AsignacionHorarioEntity;
 import elp.edu.pe.horario.infrastructure.persistence.jpa.AsignacionHorarioJpaRepository;
 import jakarta.persistence.EntityManager;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
+
 @Repository
 public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioRepository {
 

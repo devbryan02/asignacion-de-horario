@@ -6,8 +6,6 @@ import elp.edu.pe.horario.domain.model.Curso;
 import elp.edu.pe.horario.domain.model.UnidadAcademica;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 public class CursoDtoMapper {
 

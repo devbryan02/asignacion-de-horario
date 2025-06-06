@@ -6,8 +6,6 @@ import elp.edu.pe.horario.domain.repository.AsignacionHorarioRepository;
 import elp.edu.pe.horario.shared.exception.BadRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.UUID;
 @Transactional
 public class ObtenerHorariosUseCase {
 
-    private final static Logger logger = LoggerFactory.getLogger(ObtenerHorariosUseCase.class);
     private final AsignacionHorarioRepository asignacionHorarioRepository;
     private final HorarioDtoMapper horarioDtoMapper;
 
