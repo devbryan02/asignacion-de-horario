@@ -11,6 +11,7 @@ import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
 
 import java.time.Duration;
+import java.time.LocalTime;
 
 import static org.optaplanner.core.api.score.stream.Joiners.equal;
 
@@ -25,7 +26,9 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 limitarHorasContratadasPorDocente(constraintFactory),
                 balancearHorasDocente(constraintFactory),
                 preferirBloquesDisponibles(constraintFactory),
-                limitarHorasPorDiaPorDocente(constraintFactory)
+                limitarHorasPorDiaPorDocente(constraintFactory),
+                seccionNoSuperpuesta(constraintFactory),
+                periodoNoSuperpuesto(constraintFactory)
         };
     }
 
@@ -46,19 +49,19 @@ public class HorarioConstraintProvider implements ConstraintProvider {
         return factory
                 .forEach(AsignacionHorario.class)
                 .join(AsignacionHorario.class,
-                        equal(AsignacionHorario::getDocente),
+                        equal(a -> a.getCursoSeccionDocente().getDocente()),
                         equal(AsignacionHorario::getBloqueHorario))
                 .filter((a1, a2) -> !a1.equals(a2))
                 .penalize(HardSoftScore.ONE_HARD)
                 .asConstraint("Docente duplicado en mismo bloque");
     }
 
-    //  Regla 3: Evitar bloques que el docente ha restringido
+    // Regla 3: Evitar bloques que el docente ha restringido
     private Constraint evitarRestriccionesDocente(ConstraintFactory factory) {
         return factory
                 .forEach(AsignacionHorario.class)
                 .filter(asignacion -> {
-                    Docente docente = asignacion.getDocente();
+                    Docente docente = asignacion.getCursoSeccionDocente().getDocente();
                     BloqueHorario bloque = asignacion.getBloqueHorario();
 
                     return docente != null &&
@@ -73,8 +76,9 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 })
                 .penalize(HardSoftScore.ONE_SOFT, asignacion -> {
                     BloqueHorario bloque = asignacion.getBloqueHorario();
+                    Docente docente = asignacion.getCursoSeccionDocente().getDocente();
 
-                    return asignacion.getDocente().getRestricciones().stream()
+                    return docente.getRestricciones().stream()
                             .filter(restriccion ->
                                     restriccion.getTipoRestriccion() == TipoRestriccion.BLOQUEADO &&
                                             restriccion.getDiaSemana() == bloque.getDiaSemana() &&
@@ -95,12 +99,11 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 .asConstraint("Evitar bloques restringidos por docente (suavizado)");
     }
 
-
     private Constraint preferirBloquesDisponibles(ConstraintFactory factory) {
         return factory
                 .forEach(AsignacionHorario.class)
                 .filter(asignacion -> {
-                    Docente docente = asignacion.getDocente();
+                    Docente docente = asignacion.getCursoSeccionDocente().getDocente();
                     if (docente == null || docente.getRestricciones() == null) return false;
 
                     BloqueHorario bloque = asignacion.getBloqueHorario();
@@ -118,8 +121,6 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 .asConstraint("Preferir bloques disponibles por el docente");
     }
 
-
-
     /**
      * Restricción que verifica que los docentes no excedan sus horas contratadas
      */
@@ -127,7 +128,7 @@ public class HorarioConstraintProvider implements ConstraintProvider {
         return constraintFactory
                 .forEach(AsignacionHorario.class)
                 .groupBy(
-                        AsignacionHorario::getDocente,
+                        a -> a.getCursoSeccionDocente().getDocente(),
                         ConstraintCollectors.sum(ah -> {
                             Duration duracion = Duration.between(ah.getBloqueHorario().getHoraInicio(),
                                     ah.getBloqueHorario().getHoraFin());
@@ -142,23 +143,22 @@ public class HorarioConstraintProvider implements ConstraintProvider {
 
     /**
      * Restricción que recompensa cuando las horas asignadas se aproximan a las horas contratadas
-     * Busca optimizar el uso del tiempo contratado de los docentes
      */
     public Constraint balancearHorasDocente(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(AsignacionHorario.class)
-                .groupBy(AsignacionHorario::getDocente, 
-                    ConstraintCollectors.sum(ah -> {
-                        Duration duracion = Duration.between(ah.getBloqueHorario().getHoraInicio(), 
-                                ah.getBloqueHorario().getHoraFin());
-                        return (int) duracion.toHours();
-                    }))
-            .reward(HardSoftScore.ONE_SOFT,
-                    (docente, totalHoras) -> {
-                        int diferencia = docente.getHorasContratadas() - totalHoras;
-                        return Math.max(0, docente.getHorasContratadas() - diferencia);
-                    })
-            .asConstraint("Aproximarse a horas contratadas");
+                .groupBy(a -> a.getCursoSeccionDocente().getDocente(),
+                        ConstraintCollectors.sum(ah -> {
+                            Duration duracion = Duration.between(ah.getBloqueHorario().getHoraInicio(),
+                                    ah.getBloqueHorario().getHoraFin());
+                            return (int) duracion.toHours();
+                        }))
+                .reward(HardSoftScore.ONE_SOFT,
+                        (docente, totalHoras) -> {
+                            int diferencia = docente.getHorasContratadas() - totalHoras;
+                            return Math.max(0, docente.getHorasContratadas() - diferencia);
+                        })
+                .asConstraint("Aproximarse a horas contratadas");
     }
 
     /**
@@ -168,7 +168,7 @@ public class HorarioConstraintProvider implements ConstraintProvider {
         return factory
                 .forEach(AsignacionHorario.class)
                 .groupBy(
-                        AsignacionHorario::getDocente,
+                        a -> a.getCursoSeccionDocente().getDocente(),
                         asignacion -> asignacion.getBloqueHorario().getDiaSemana(),
                         ConstraintCollectors.sum(asignacion -> {
                             Duration duracion = Duration.between(
@@ -184,5 +184,69 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                         (docente, dia, totalHoras) ->
                                 totalHoras - docente.getHorasMaximasPorDia())
                 .asConstraint("Excede horas máximas por día para docente");
+    }
+
+    /**
+     * Restricción que verifica que no haya superposición de bloques para la misma sección
+     */
+    private Constraint seccionNoSuperpuesta(ConstraintFactory factory) {
+        return factory
+                .forEachUniquePair(AsignacionHorario.class,
+                        // Primera condición: misma sección
+                        equal(a -> a.getCursoSeccionDocente().getSeccion()))
+                .filter((a1, a2) -> {
+                    // Verificar que estén en el mismo día
+                    boolean mismoDia = a1.getBloqueHorario().getDiaSemana()
+                            .equals(a2.getBloqueHorario().getDiaSemana());
+
+                    if (!mismoDia) return false;
+
+                    // Verificar solapamiento de horarios
+                    return bloquesSeSolapan(
+                            a1.getBloqueHorario().getHoraInicio(),
+                            a1.getBloqueHorario().getHoraFin(),
+                            a2.getBloqueHorario().getHoraInicio(),
+                            a2.getBloqueHorario().getHoraFin()
+                    );
+                })
+                .penalize(HardSoftScore.ONE_HARD)
+                .asConstraint("Sección con horarios superpuestos");
+    }
+
+    /**
+     * Restricción para evitar cruces por periodo académico
+     */
+    private Constraint periodoNoSuperpuesto(ConstraintFactory factory) {
+        return factory
+                .forEachUniquePair(AsignacionHorario.class,
+                        // Mismo periodo académico (ajusta según tu modelo)
+                        equal(a -> a.getCursoSeccionDocente().getSeccion().getPeriodo()))
+                .filter((a1, a2) -> {
+                    // Verificar que estén en el mismo día
+                    boolean mismoDia = a1.getBloqueHorario().getDiaSemana()
+                            .equals(a2.getBloqueHorario().getDiaSemana());
+
+                    if (!mismoDia) return false;
+
+                    // Verificar solapamiento de horarios
+                    return bloquesSeSolapan(
+                            a1.getBloqueHorario().getHoraInicio(),
+                            a1.getBloqueHorario().getHoraFin(),
+                            a2.getBloqueHorario().getHoraInicio(),
+                            a2.getBloqueHorario().getHoraFin()
+                    );
+                })
+                .penalize(HardSoftScore.ONE_HARD)
+                .asConstraint("Periodo con horarios superpuestos");
+    }
+
+    /**
+     * MEJORADO: Método auxiliar para verificar solapamiento más robusto
+     */
+    private boolean bloquesSeSolapan(LocalTime inicio1, LocalTime fin1, LocalTime inicio2, LocalTime fin2) {
+        // Verificación más precisa: los bloques NO se solapan si uno termina antes de que empiece el otro
+        // Se solapan si NO están completamente separados
+        return !(fin1.isBefore(inicio2) || fin1.equals(inicio2) ||
+                fin2.isBefore(inicio1) || fin2.equals(inicio1));
     }
 }

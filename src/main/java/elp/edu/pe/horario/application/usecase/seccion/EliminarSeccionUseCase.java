@@ -1,7 +1,7 @@
 package elp.edu.pe.horario.application.usecase.seccion;
 
 import elp.edu.pe.horario.domain.model.Seccion;
-import elp.edu.pe.horario.domain.repository.CursoSeccionRepository;
+import elp.edu.pe.horario.domain.repository.CursoSeccionDocenteRepository;
 import elp.edu.pe.horario.domain.repository.SeccionRepository;
 import elp.edu.pe.horario.shared.exception.BadRequest;
 import elp.edu.pe.horario.shared.exception.DeleteException;
@@ -20,7 +20,7 @@ public class EliminarSeccionUseCase {
 
     private final static Logger log = LoggerFactory.getLogger(EliminarSeccionUseCase.class);
     private final SeccionRepository seccionRepository;
-    private final CursoSeccionRepository cursoSeccionRepository;
+    private final CursoSeccionDocenteRepository cursoSeccionDocenteRepository;
 
     @Transactional
     public void ejecutar(UUID id) {
@@ -32,7 +32,7 @@ public class EliminarSeccionUseCase {
                     .orElseThrow(() -> new NotFoundException("Sección no encontrada"));
 
             // Verificar si la sección está asociada a algún curso
-            if (cursoSeccionRepository.existsBySeccionId(id)) {
+            if (cursoSeccionDocenteRepository.existsBySeccionId(id)) {
                 throw new DeleteException("No se puede eliminar la sección porque está asociada a un curso ");
             }
 

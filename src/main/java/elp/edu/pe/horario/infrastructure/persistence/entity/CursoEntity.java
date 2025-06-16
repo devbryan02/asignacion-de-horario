@@ -24,12 +24,15 @@ public class CursoEntity {
     private Integer horasSemanales;
     private String tipo;
 
-    @ManyToOne(targetEntity = UnidadEntity.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "unidad_id", nullable = false)
-    private UnidadEntity unidad;
-
+    @ManyToMany
+    @JoinTable(
+            name = "curso_unidad_academica",
+            joinColumns = @JoinColumn(name = "curso_id"),
+            inverseJoinColumns = @JoinColumn(name = "unidad_academica_id")
+    )
+    private List<UnidadEntity> unidades = new ArrayList<>();
 
     @OneToMany(mappedBy = "curso")
-    private List<CursoSeccionEntity> cursoSecciones = new ArrayList<>();
+    private List<CursoSeccionDocenteEntity> cursoSecciones = new ArrayList<>();
 
 }

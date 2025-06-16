@@ -2,7 +2,7 @@ package elp.edu.pe.horario.application.usecase.curso;
 
 import elp.edu.pe.horario.domain.model.Curso;
 import elp.edu.pe.horario.domain.repository.CursoRepository;
-import elp.edu.pe.horario.domain.repository.CursoSeccionRepository;
+import elp.edu.pe.horario.domain.repository.CursoSeccionDocenteRepository;
 import elp.edu.pe.horario.shared.exception.BadRequest;
 import elp.edu.pe.horario.shared.exception.DeleteException;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
@@ -20,7 +20,7 @@ public class EliminarCursoUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(EliminarCursoUseCase.class);
     private final CursoRepository cursoRepository;
-    private final CursoSeccionRepository cursoSeccionRepository;
+    private final CursoSeccionDocenteRepository cursoSeccionDocenteRepository;
 
     @Transactional
     public void ejecutar(UUID id) {
@@ -32,7 +32,7 @@ public class EliminarCursoUseCase {
                     .orElseThrow(() -> new NotFoundException("Curso no encontrado"));
 
             // Verificar referencias en curso_seccion
-            boolean tieneReferencias = cursoSeccionRepository.existsByCursoId(id);
+            boolean tieneReferencias = cursoSeccionDocenteRepository.existsByCursoId(id);
             log.info("¿Tiene referencias en curso_seccion?: {}", tieneReferencias);
             if (tieneReferencias) {
                 throw new DeleteException("No se puede eliminar el curso porque está siendo utilizado en secciones.");

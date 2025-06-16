@@ -24,12 +24,8 @@ public class AsignacionHorarioEntity {
     private Long version = 1L;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "docente_id", nullable = false)
-    private DocenteEntity docente;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "curso_seccion_id", nullable = false)
-    private CursoSeccionEntity cursoSeccion;
+    private CursoSeccionDocenteEntity cursoSeccion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "aula_id")

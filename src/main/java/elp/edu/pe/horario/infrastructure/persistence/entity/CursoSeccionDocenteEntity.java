@@ -14,8 +14,8 @@ import java.util.UUID;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "curso_seccion")
-public class CursoSeccionEntity {
+@Table(name = "curso_seccion-docente")
+public class CursoSeccionDocenteEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -27,6 +27,10 @@ public class CursoSeccionEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seccion_id", nullable = false)
     private SeccionEntity seccion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "docente_id", nullable = false)
+    private DocenteEntity docente;
 
     @Enumerated(EnumType.STRING)
     private ModoClase modo;

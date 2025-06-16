@@ -27,6 +27,6 @@ public class SeccionEntity {
     private PeriodoEntity periodo;
 
     @OneToMany(mappedBy = "seccion")
-    private List<CursoSeccionEntity> cursoSecciones = new ArrayList<>();
+    private List<CursoSeccionDocenteEntity> cursoSecciones = new ArrayList<>();
 
 }

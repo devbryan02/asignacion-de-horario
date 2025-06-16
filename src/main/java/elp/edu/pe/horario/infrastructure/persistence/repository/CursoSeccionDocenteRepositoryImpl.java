@@ -1,10 +1,10 @@
 package elp.edu.pe.horario.infrastructure.persistence.repository;
 
-import elp.edu.pe.horario.domain.model.CursoSeccion;
-import elp.edu.pe.horario.domain.repository.CursoSeccionRepository;
+import elp.edu.pe.horario.domain.model.CursoSeccionDocente;
+import elp.edu.pe.horario.domain.repository.CursoSeccionDocenteRepository;
 import elp.edu.pe.horario.infrastructure.mapper.CursoSeccionMapper;
-import elp.edu.pe.horario.infrastructure.persistence.entity.CursoSeccionEntity;
-import elp.edu.pe.horario.infrastructure.persistence.jpa.CursoSeccionJpaRepository;
+import elp.edu.pe.horario.infrastructure.persistence.entity.CursoSeccionDocenteEntity;
+import elp.edu.pe.horario.infrastructure.persistence.jpa.CursoSeccionDocenteJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,18 +12,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class CursoSeccionRepositoryImpl implements CursoSeccionRepository {
+public class CursoSeccionDocenteRepositoryImpl implements CursoSeccionDocenteRepository {
 
-    private final CursoSeccionJpaRepository jpaRepository;
+    private final CursoSeccionDocenteJpaRepository jpaRepository;
     private final CursoSeccionMapper mapper;
 
-    public CursoSeccionRepositoryImpl(CursoSeccionJpaRepository jpaRepository, CursoSeccionMapper mapper) {
+    public CursoSeccionDocenteRepositoryImpl(CursoSeccionDocenteJpaRepository jpaRepository, CursoSeccionMapper mapper) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;
     }
 
     @Override
-    public List<CursoSeccion> findAll() {
+    public List<CursoSeccionDocente> findAll() {
         return jpaRepository.findAll()
                 .stream()
                 .map(mapper::toDomain)
@@ -31,15 +31,15 @@ public class CursoSeccionRepositoryImpl implements CursoSeccionRepository {
     }
 
     @Override
-    public Optional<CursoSeccion> findById(UUID id) {
+    public Optional<CursoSeccionDocente> findById(UUID id) {
         return jpaRepository.findById(id)
                 .map(mapper::toDomain);
     }
 
     @Override
-    public CursoSeccion save(CursoSeccion curso) {
-        CursoSeccionEntity entity = mapper.toEntity(curso);
-        CursoSeccionEntity savedEntity = jpaRepository.save(entity);
+    public CursoSeccionDocente save(CursoSeccionDocente curso) {
+        CursoSeccionDocenteEntity entity = mapper.toEntity(curso);
+        CursoSeccionDocenteEntity savedEntity = jpaRepository.save(entity);
         return mapper.toDomain(savedEntity) ;
     }
 
@@ -49,12 +49,17 @@ public class CursoSeccionRepositoryImpl implements CursoSeccionRepository {
     }
 
     @Override
-    public void saveAll(List<CursoSeccion> cursoSecciones) {
+    public void saveAll(List<CursoSeccionDocente> cursoSecciones) {
         jpaRepository.saveAllAndFlush(cursoSecciones.stream().map(mapper::toEntity).toList());
     }
 
     @Override
-    public boolean existsByCursoAndSeccion(UUID cursoId, UUID seccionId) {
+    public boolean existsByCursoIdAndSeccionIdAndDocenteId(UUID cursoId, UUID seccionId, UUID docenteId) {
+        return jpaRepository.existsByCursoIdAndSeccionIdAndDocenteId(cursoId, seccionId, docenteId);
+    }
+
+    @Override
+    public boolean existsByCursoIdAndSeccionId(UUID cursoId, UUID seccionId) {
         return jpaRepository.existsByCursoIdAndSeccionId(cursoId, seccionId);
     }
 

@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.domain.model;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Curso {
@@ -8,14 +9,17 @@ public class Curso {
     private String nombre;
     private Integer horasSemanales;
     private String tipo;
-    private UnidadAcademica unidad;
+    private List<UnidadAcademica> unidades;
 
-    public Curso(UUID id, String nombre, Integer horasSemanales, String tipo, UnidadAcademica unidad) {
+    public Curso(){
+
+    }
+
+    public Curso(UUID id, String nombre, Integer horasSemanales, String tipo) {
         this.id = id;
         this.nombre = nombre;
         this.horasSemanales = horasSemanales;
         this.tipo = tipo;
-        this.unidad = unidad;
     }
 
     public UUID getId() {
@@ -50,12 +54,12 @@ public class Curso {
         this.tipo = tipo;
     }
 
-    public UnidadAcademica getUnidad() {
-        return unidad;
+    public List<UnidadAcademica> getUnidades() {
+        return unidades;
     }
 
-    public void setUnidad(UnidadAcademica unidad) {
-        this.unidad = unidad;
+    public void setUnidades(List<UnidadAcademica> unidades) {
+        this.unidades = unidades;
     }
 
     @Override
@@ -65,7 +69,7 @@ public class Curso {
                 ", nombre='" + nombre + '\'' +
                 ", horasSemanales=" + horasSemanales +
                 ", tipo='" + tipo + '\'' +
-                ", unidad=" + unidad +
+                ", unidades=" + unidades +
                 '}';
     }
 }

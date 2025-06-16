@@ -47,7 +47,7 @@ public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioReposit
 
     @Override
     public List<AsignacionHorario> findByDocenteId(UUID docenteId) {
-        return jpaRepository.findByDocente_Id(docenteId)
+        return jpaRepository.findByCursoSeccion_Docente_Id(docenteId)
                 .stream()
                 .map(mapper::toDomain)
                 .toList();
@@ -63,7 +63,7 @@ public class AsignacionHorarioRepositoryImpl implements AsignacionHorarioReposit
 
     @Override
     public boolean existeReferenciaDocente(UUID id) {
-        return jpaRepository.existsByDocenteId(id);
+        return jpaRepository.existsByCursoSeccion_Docente_Id(id);
     }
 
 }

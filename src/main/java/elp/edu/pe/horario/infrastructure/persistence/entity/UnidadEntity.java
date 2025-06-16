@@ -22,9 +22,6 @@ public class UnidadEntity {
     private UUID id;
     private String nombre;
 
-    @OneToMany(mappedBy = "unidad", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    private List<CursoEntity> cursos = new ArrayList<>();
-
     @ManyToMany(mappedBy = "unidades")
     private List<DocenteEntity> docentes = new ArrayList<>();
 

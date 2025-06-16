@@ -7,6 +7,7 @@ import elp.edu.pe.horario.infrastructure.persistence.entity.CursoEntity;
 import elp.edu.pe.horario.infrastructure.persistence.jpa.CursoJpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,6 +39,10 @@ public class CursoRepositoryImpl implements CursoRepository {
     @Override
     public Curso save(Curso curso) {
         CursoEntity entity = mapper.toEntity(curso);
+        // Asegúrate de que la lista de secciones no sea null
+        if (entity.getUnidades() == null) {
+            entity.setUnidades(new ArrayList<>());
+        }
         CursoEntity saved = jpaRepository.save(entity);
         return mapper.toDomain(saved);
     }

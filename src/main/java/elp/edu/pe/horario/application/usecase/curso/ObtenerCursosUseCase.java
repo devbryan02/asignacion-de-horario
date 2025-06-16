@@ -25,13 +25,13 @@ public class ObtenerCursosUseCase {
     public List<CursoDto> obtenerCursos(){
         return cursoRepository.findAll()
                 .stream()
-                .map(cursoDtoMapper::toDto)
+                .map(cursoDtoMapper::toDtoWithUnidadesSize)
                 .toList();
     }
 
     public Optional<CursoDto> obtenerCursoPorId(UUID id){
         return cursoRepository.findById(id)
-                .map(cursoDtoMapper::toDto);
+                .map(cursoDtoMapper::toDtoWithUnidadesSize);
     }
 
 }

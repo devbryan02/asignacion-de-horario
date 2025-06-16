@@ -12,8 +12,7 @@ public class AsignacionHorario {
     @PlanningId
     private UUID id;
 
-    private Docente docente;
-    private CursoSeccion cursoSeccion;
+    private CursoSeccionDocente cursoSeccionDocente;
 
     @PlanningVariable(valueRangeProviderRefs = "aulaRange")
     private Aula aula;
@@ -24,13 +23,13 @@ public class AsignacionHorario {
     public AsignacionHorario() {
     }
 
-    public AsignacionHorario(UUID id, Docente docente, CursoSeccion cursoSeccion, Aula aula, BloqueHorario bloqueHorario) {
+    public AsignacionHorario(UUID id, CursoSeccionDocente cursoSeccionDocente, Aula aula, BloqueHorario bloqueHorario) {
         this.id = id;
-        this.docente = docente;
-        this.cursoSeccion = cursoSeccion;
+        this.cursoSeccionDocente = cursoSeccionDocente;
         this.aula = aula;
         this.bloqueHorario = bloqueHorario;
     }
+
 
     public UUID getId() {
         return id;
@@ -40,20 +39,12 @@ public class AsignacionHorario {
         this.id = id;
     }
 
-    public Docente getDocente() {
-        return docente;
+    public CursoSeccionDocente getCursoSeccionDocente() {
+        return cursoSeccionDocente;
     }
 
-    public void setDocente(Docente docente) {
-        this.docente = docente;
-    }
-
-    public CursoSeccion getCursoSeccion() {
-        return cursoSeccion;
-    }
-
-    public void setCursoSeccion(CursoSeccion cursoSeccion) {
-        this.cursoSeccion = cursoSeccion;
+    public void setCursoSeccionDocente(CursoSeccionDocente cursoSeccionDocente) {
+        this.cursoSeccionDocente = cursoSeccionDocente;
     }
 
     public Aula getAula() {
@@ -76,8 +67,7 @@ public class AsignacionHorario {
     public String toString() {
         return "AsignacionHorario{" +
                 "id=" + id +
-                ", docente=" + docente +
-                ", cursoSeccion=" + cursoSeccion +
+                ", cursoSeccionDocente=" + cursoSeccionDocente +
                 ", aula=" + aula +
                 ", bloqueHorario=" + bloqueHorario +
                 '}';

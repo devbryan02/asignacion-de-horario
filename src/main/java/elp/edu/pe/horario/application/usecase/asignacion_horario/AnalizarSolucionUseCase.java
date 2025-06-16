@@ -32,7 +32,7 @@ public class AnalizarSolucionUseCase {
 
     public int obtenerCantidadDocentesAsignados(List<AsignacionHorario> asignaciones) {
         Map<String, List<AsignacionHorario>> asignacionesPorDocente = asignaciones.stream()
-                .collect(Collectors.groupingBy(a -> String.valueOf(a.getDocente().getId())));
+                .collect(Collectors.groupingBy(a -> String.valueOf(a.getCursoSeccionDocente().getDocente().getId())));
 
         return asignacionesPorDocente.size();
     }

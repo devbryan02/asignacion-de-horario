@@ -8,12 +8,17 @@ import elp.edu.pe.horario.domain.model.UnidadAcademica;
 import elp.edu.pe.horario.domain.repository.CursoRepository;
 import elp.edu.pe.horario.domain.repository.UnidadRepository;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.UUID;
+
 
 @Service
+@RequiredArgsConstructor
 public class CrearCursoUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(CrearCursoUseCase.class);
@@ -21,22 +26,22 @@ public class CrearCursoUseCase {
     private final CursoDtoMapper cursoDtoMapper;
     private final UnidadRepository unidadRepository;
 
-    public CrearCursoUseCase(CursoRepository cursoRepository, CursoDtoMapper cursoDtoMapper, UnidadRepository unidadRepository) {
-        this.cursoRepository = cursoRepository;
-        this.cursoDtoMapper = cursoDtoMapper;
-        this.unidadRepository = unidadRepository;
-    }
 
     public RegistroResponse ejecutar(CursoRequest request) {
         try{
 
-            UnidadAcademica unidadAcademica = unidadRepository
-                    .findById(request.unidadId())
-                    .orElseThrow(() -> new NotFoundException("Unidad académica no encontrada"));
+            Curso curso = cursoDtoMapper.toDomain(request);
 
-            Curso curso = cursoDtoMapper.toDomain(request, unidadAcademica);
+            List<UUID> unidadesIds = request.unidadesIds();
+            if(unidadesIds != null && !unidadesIds.isEmpty()){
+                List<UnidadAcademica> unidades = unidadRepository.findAllById(unidadesIds);
+                if (unidades.size() != unidadesIds.size()) {
+                    return RegistroResponse.failure("Una o más unidades no existen");
+                }
+                curso.setUnidades(unidades);
+            }
             cursoRepository.save(curso);
-            log.info("Curso creado correctamente: {}", curso.getId());
+            log.info("Curso creado correctamente: {}", curso);
             return RegistroResponse.success("Curso creado correctamente");
         }catch (Exception e){
             log.error(e.getMessage());

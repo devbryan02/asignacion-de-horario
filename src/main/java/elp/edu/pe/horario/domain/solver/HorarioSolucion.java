@@ -21,10 +21,7 @@ public class HorarioSolucion {
     private List<BloqueHorario> bloqueHorarioList;
 
     @ProblemFactCollectionProperty
-    private List<Docente> docenteList;
-
-    @ProblemFactCollectionProperty
-    private List<CursoSeccion> cursoSeccionList;
+    private List<CursoSeccionDocente> cursoSeccionDocentes;
 
     // Entidad a planificar
     @PlanningEntityCollectionProperty
@@ -39,13 +36,12 @@ public class HorarioSolucion {
     }
 
     //constructor con todos los atributos
-    public HorarioSolucion(List<Aula> aulaList, List<BloqueHorario> bloqueHorarioList, List<Docente> docenteList,
-                           List<CursoSeccion> cursoSeccionList, List<AsignacionHorario> asignacionHorarioList) {
+    public HorarioSolucion(List<Aula> aulaList, HardSoftScore score, List<AsignacionHorario> asignacionHorarioList, List<CursoSeccionDocente> cursoSeccionDocentes, List<BloqueHorario> bloqueHorarioList) {
         this.aulaList = aulaList;
-        this.bloqueHorarioList = bloqueHorarioList;
-        this.docenteList = docenteList;
-        this.cursoSeccionList = cursoSeccionList;
+        this.score = score;
         this.asignacionHorarioList = asignacionHorarioList;
+        this.cursoSeccionDocentes = cursoSeccionDocentes;
+        this.bloqueHorarioList = bloqueHorarioList;
     }
 
     @ValueRangeProvider(id = "aulaRange")
@@ -66,20 +62,12 @@ public class HorarioSolucion {
         this.bloqueHorarioList = bloqueHorarioList;
     }
 
-    public List<Docente> getDocenteList() {
-        return docenteList;
+    public List<CursoSeccionDocente> getCursoSeccionDocentes() {
+        return cursoSeccionDocentes;
     }
 
-    public void setDocenteList(List<Docente> docenteList) {
-        this.docenteList = docenteList;
-    }
-
-    public List<CursoSeccion> getCursoSeccionList() {
-        return cursoSeccionList;
-    }
-
-    public void setCursoSeccionList(List<CursoSeccion> cursoSeccionList) {
-        this.cursoSeccionList = cursoSeccionList;
+    public void setCursoSeccionDocentes(List<CursoSeccionDocente> cursoSeccionDocentes) {
+        this.cursoSeccionDocentes = cursoSeccionDocentes;
     }
 
     public List<AsignacionHorario> getAsignacionHorarioList() {

@@ -7,6 +7,6 @@ public record CursoDto(
         String nombre,
         Integer horasSemanales,
         String tipo,
-        String unidadAcademica
+        Integer unidadesAcademicasCount
 )
 { }

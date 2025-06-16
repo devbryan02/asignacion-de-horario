@@ -1,20 +1,23 @@
 package elp.edu.pe.horario.domain.model;
 
 import elp.edu.pe.horario.domain.enums.ModoClase;
+import lombok.Getter;
 
 import java.util.UUID;
 
-public class CursoSeccion {
+public class CursoSeccionDocente {
 
     private UUID id;
     private Curso curso;
     private Seccion seccion;
+    private Docente docente;
     private ModoClase modo;
 
-    public CursoSeccion(UUID id, Curso curso, Seccion seccion, ModoClase modo) {
+    public CursoSeccionDocente(UUID id, Curso curso, Seccion seccion, Docente docente, ModoClase modo) {
         this.id = id;
         this.curso = curso;
         this.seccion = seccion;
+        this.docente = docente;
         this.modo = modo;
     }
 
@@ -42,6 +45,14 @@ public class CursoSeccion {
         this.seccion = seccion;
     }
 
+    public Docente getDocente() {
+        return docente;
+    }
+
+    public void setDocente(Docente docente) {
+        this.docente = docente;
+    }
+
     public ModoClase getModo() {
         return modo;
     }
@@ -56,6 +67,7 @@ public class CursoSeccion {
                 "id=" + id +
                 ", curso=" + curso +
                 ", seccion=" + seccion +
+                ", docente=" + docente +
                 ", modo=" + modo +
                 '}';
     }
