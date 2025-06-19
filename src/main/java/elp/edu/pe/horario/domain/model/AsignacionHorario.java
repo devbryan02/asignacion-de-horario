@@ -1,12 +1,13 @@
 package elp.edu.pe.horario.domain.model;
 
+import elp.edu.pe.horario.domain.solver.AsignacionHorarioDifficultyComparator;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 import java.util.UUID;
 
-@PlanningEntity
+@PlanningEntity(difficultyComparatorClass = AsignacionHorarioDifficultyComparator.class)
 public class AsignacionHorario {
 
     @PlanningId
@@ -14,12 +15,13 @@ public class AsignacionHorario {
 
     private CursoSeccionDocente cursoSeccionDocente;
 
-    @PlanningVariable(valueRangeProviderRefs = "aulaRange")
+    @PlanningVariable(valueRangeProviderRefs = "aulaRange", nullable = true)
     private Aula aula;
 
-    @PlanningVariable(valueRangeProviderRefs = "bloqueHorarioRange")
+    @PlanningVariable(valueRangeProviderRefs = "bloqueHorarioRange", nullable = true)
     private BloqueHorario bloqueHorario;
 
+    // Constructor por defecto requerido por OptaPlanner
     public AsignacionHorario() {
     }
 
@@ -29,7 +31,6 @@ public class AsignacionHorario {
         this.aula = aula;
         this.bloqueHorario = bloqueHorario;
     }
-
 
     public UUID getId() {
         return id;

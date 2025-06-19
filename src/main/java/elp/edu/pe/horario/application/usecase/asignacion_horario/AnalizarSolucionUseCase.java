@@ -1,13 +1,11 @@
 package elp.edu.pe.horario.application.usecase.asignacion_horario;
 
 
-import elp.edu.pe.horario.domain.model.AsignacionHorario;
+import elp.edu.pe.horario.domain.model.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,26 +13,54 @@ import java.util.stream.Collectors;
 public class AnalizarSolucionUseCase {
 
     public int obtenerCantidadAsignaciones(List<AsignacionHorario> asignaciones) {
+        if (asignaciones == null) {
+            return 0;
+        }
         return asignaciones.size();
     }
 
     public Set<UUID> obtenerAulasUsadas(List<AsignacionHorario> asignaciones) {
+        if (asignaciones == null || asignaciones.isEmpty()) {
+            return Collections.emptySet();
+        }
+
         return asignaciones.stream()
-                .map(a -> a.getAula().getId())
+                .filter(Objects::nonNull)
+                .map(AsignacionHorario::getAula)
+                .filter(Objects::nonNull)
+                .map(Aula::getId)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
     public Set<String> obtenerBloquesUsados(List<AsignacionHorario> asignaciones) {
+        if (asignaciones == null || asignaciones.isEmpty()) {
+            return Collections.emptySet();
+        }
+
         return asignaciones.stream()
-                .map(a -> a.getBloqueHorario().toString())
+                .filter(Objects::nonNull)
+                .map(AsignacionHorario::getBloqueHorario)
+                .filter(Objects::nonNull)
+                .map(BloqueHorario::toString)
                 .collect(Collectors.toSet());
     }
 
     public int obtenerCantidadDocentesAsignados(List<AsignacionHorario> asignaciones) {
-        Map<String, List<AsignacionHorario>> asignacionesPorDocente = asignaciones.stream()
-                .collect(Collectors.groupingBy(a -> String.valueOf(a.getCursoSeccionDocente().getDocente().getId())));
+        if (asignaciones == null || asignaciones.isEmpty()) {
+            return 0;
+        }
 
-        return asignacionesPorDocente.size();
+        return (int) asignaciones.stream()
+                .filter(Objects::nonNull)
+                .map(AsignacionHorario::getCursoSeccionDocente)
+                .filter(Objects::nonNull)
+                .map(CursoSeccionDocente::getDocente)
+                .filter(Objects::nonNull)
+                .map(Docente::getId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .count();
     }
 
 }

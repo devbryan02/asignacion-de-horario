@@ -2,7 +2,7 @@ package elp.edu.pe.horario.infrastructure.persistence.repository;
 
 import elp.edu.pe.horario.domain.model.CursoSeccionDocente;
 import elp.edu.pe.horario.domain.repository.CursoSeccionDocenteRepository;
-import elp.edu.pe.horario.infrastructure.mapper.CursoSeccionMapper;
+import elp.edu.pe.horario.infrastructure.mapper.CursoSeccionDocenteMapper;
 import elp.edu.pe.horario.infrastructure.persistence.entity.CursoSeccionDocenteEntity;
 import elp.edu.pe.horario.infrastructure.persistence.jpa.CursoSeccionDocenteJpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,9 +15,9 @@ import java.util.UUID;
 public class CursoSeccionDocenteRepositoryImpl implements CursoSeccionDocenteRepository {
 
     private final CursoSeccionDocenteJpaRepository jpaRepository;
-    private final CursoSeccionMapper mapper;
+    private final CursoSeccionDocenteMapper mapper;
 
-    public CursoSeccionDocenteRepositoryImpl(CursoSeccionDocenteJpaRepository jpaRepository, CursoSeccionMapper mapper) {
+    public CursoSeccionDocenteRepositoryImpl(CursoSeccionDocenteJpaRepository jpaRepository, CursoSeccionDocenteMapper mapper) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;
     }

@@ -11,13 +11,13 @@ public class AsignacionMapper {
 
     private final AulaMapper aulaMapper;
     private final BloqueHorarioMapper bloqueHorarioMapper;
-    private final CursoSeccionMapper cursoSeccionMapper;
+    private final CursoSeccionDocenteMapper cursoSeccionDocenteMapper;
 
 
     public AsignacionHorario toDomain(AsignacionHorarioEntity entity){
         return new AsignacionHorario(
                 entity.getId(),
-                cursoSeccionMapper.toDomain(entity.getCursoSeccion()),
+                cursoSeccionDocenteMapper.toDomain(entity.getCursoSeccion()),
                 aulaMapper.toDomain(entity.getAula()),
                 bloqueHorarioMapper.toDomain(entity.getBloqueHorario())
         );
@@ -28,7 +28,7 @@ public class AsignacionMapper {
         if (domain.getId() != null) {
             entity.setId(domain.getId());
         }
-        entity.setCursoSeccion(cursoSeccionMapper.toEntity(domain.getCursoSeccionDocente()));
+        entity.setCursoSeccion(cursoSeccionDocenteMapper.toEntity(domain.getCursoSeccionDocente()));
         entity.setAula(aulaMapper.toEntity(domain.getAula()));
         entity.setBloqueHorario(bloqueHorarioMapper.toEntity(domain.getBloqueHorario()));
         return entity;

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CursoSeccionMapper {
+public class CursoSeccionDocenteMapper {
 
     private final CursoMapper cursoMapper;
     private final SeccionMapper seccionMapper;

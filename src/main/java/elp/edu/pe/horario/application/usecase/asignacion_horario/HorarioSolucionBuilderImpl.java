@@ -32,39 +32,72 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
         List<BloqueHorario> bloques = bloqueHorarioRepository.findAll();
         List<CursoSeccionDocente> cursoSeccionDocentes = cursoSeccionDocenteRepository.findAll();
 
+        // Asegurar distribución mínima de 3 asignaciones por bloque
+        int bloquesNecesarios = (int) Math.ceil(cursoSeccionDocentes.size() / 3.0);
+        if (bloques.size() < bloquesNecesarios) {
+            throw new IllegalStateException(
+                    String.format("Se necesitan al menos %d bloques para una distribución óptima. Actuales: %d",
+                            bloquesNecesarios, bloques.size())
+            );
+        }
+
+        // Verificar capacidad mínima de aulas
+        int aulasNecesarias = (int) Math.ceil((double) cursoSeccionDocentes.size() / bloques.size());
+        if (aulas.size() < aulasNecesarias) {
+            throw new IllegalStateException(
+                    String.format("Se necesitan al menos %d aulas para evitar superposiciones. Actuales: %d",
+                            aulasNecesarias, aulas.size())
+            );
+        }
+
         cargarRestriccionesParaDocentes(cursoSeccionDocentes);
 
-        log.info("Cargados: {} aulas, {} bloques, {} curso-seccion-docentes",
-                aulas.size(), bloques.size(), cursoSeccionDocentes.size());
+        log.info("Configuración inicial -> Aulas: {}, Bloques: {}, Asignaciones: {}, " +
+                        "Bloques mínimos necesarios: {}, Aulas mínimas necesarias: {}",
+                aulas.size(), bloques.size(), cursoSeccionDocentes.size(),
+                bloquesNecesarios, aulasNecesarias);
+
+        // Distribuir asignaciones iniciales en bloques diferentes
+        List<AsignacionHorario> asignacionesIniciales = crearAsignacionesDistribuidas(
+                cursoSeccionDocentes, bloques, aulas);
 
         solucion.setAulaList(aulas);
         solucion.setBloqueHorarioList(bloques);
         solucion.setCursoSeccionDocentes(cursoSeccionDocentes);
-
-        // Crear lista vacía de asignaciones horario
-        Random random = new Random();
-        List<AsignacionHorario> asignacionesIniciales = cursoSeccionDocentes.stream()
-                .map(csd -> {
-                    AsignacionHorario a = new AsignacionHorario();
-                    a.setId(UUID.randomUUID());
-                    a.setCursoSeccionDocente(csd);
-
-                    // Asignación aleatoria inicial aleatoria de aula y bloque horario
-                    if (!aulas.isEmpty()) {
-                        a.setAula(aulas.get(random.nextInt(aulas.size())));
-                    }
-                    if (!bloques.isEmpty()) {
-                        a.setBloqueHorario(bloques.get(random.nextInt(bloques.size())));
-                    }
-
-                    return a;
-                })
-                .toList();
-
         solucion.setAsignacionHorarioList(asignacionesIniciales);
 
-        log.info("Preparada solución con {} asignaciones iniciales", asignacionesIniciales.size());
         return solucion;
+    }
+
+    private List<AsignacionHorario> crearAsignacionesDistribuidas(
+            List<CursoSeccionDocente> cursoSeccionDocentes,
+            List<BloqueHorario> bloques,
+            List<Aula> aulas) {
+
+        List<AsignacionHorario> asignaciones = new ArrayList<>();
+        int totalAsignaciones = cursoSeccionDocentes.size();
+        int asignacionesPorBloque = (int) Math.ceil((double) totalAsignaciones / bloques.size());
+
+        for (int i = 0; i < cursoSeccionDocentes.size(); i++) {
+            CursoSeccionDocente csd = cursoSeccionDocentes.get(i);
+
+            // Distribuir en diferentes bloques
+            int bloqueIndex = i % bloques.size();
+            int aulaIndex = (i / bloques.size()) % aulas.size();
+
+            AsignacionHorario asignacion = new AsignacionHorario(
+                    UUID.randomUUID(),
+                    csd,
+                    aulas.get(aulaIndex),
+                    bloques.get(bloqueIndex)
+            );
+            asignaciones.add(asignacion);
+        }
+
+        log.info("Creadas {} asignaciones iniciales distribuidas en {} bloques con {} aulas",
+                asignaciones.size(), bloques.size(), aulas.size());
+
+        return asignaciones;
     }
 
     private void cargarRestriccionesParaDocentes(List<CursoSeccionDocente> cursoSeccionDocentes) {
@@ -73,9 +106,9 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
                 .collect(Collectors.toSet());
 
         for (Docente docente : docentesUnicos) {
-            List<RestriccionDocente> restricciones = restriccionDocenteRepository.findAllByDocenteId(docente.getId());
+            List<RestriccionDocente> restricciones =
+                    restriccionDocenteRepository.findAllByDocenteId(docente.getId());
             docente.setRestricciones(restricciones);
-            log.info("Docente {} tiene {} restricciones cargadas", docente.getNombre(), restricciones.size());
         }
     }
 }
