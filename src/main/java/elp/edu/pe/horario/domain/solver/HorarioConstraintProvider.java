@@ -30,9 +30,19 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 seccionNoSuperpuesta(constraintFactory),
                 distribuirHorariosPorDia(constraintFactory),
                 evitarHuecos(constraintFactory),
-                distribuirAulas(constraintFactory)
+                distribuirAulas(constraintFactory),
+                incentivarDistribucionBloques(constraintFactory)
         };
     }
+
+    private Constraint incentivarDistribucionBloques(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(AsignacionHorario::getBloqueHorario)
+                .reward(HardSoftScore.ONE_SOFT.multiply(15))
+                .asConstraint("Incentivar uso de más bloques distintos");
+    }
+
 
     // Regla 1: Un aula no puede estar ocupada en dos asignaciones al mismo tiempo
     private Constraint aulaNoSuperpuesta(ConstraintFactory factory) {

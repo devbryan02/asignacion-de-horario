@@ -32,7 +32,7 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
         List<BloqueHorario> bloques = bloqueHorarioRepository.findAll();
         List<CursoSeccionDocente> cursoSeccionDocentes = cursoSeccionDocenteRepository.findAll();
 
-        // Asegurar distribución mínima de 3 asignaciones por bloque
+        // Validaciones mínimas
         int bloquesNecesarios = (int) Math.ceil(cursoSeccionDocentes.size() / 3.0);
         if (bloques.size() < bloquesNecesarios) {
             throw new IllegalStateException(
@@ -41,7 +41,6 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
             );
         }
 
-        // Verificar capacidad mínima de aulas
         int aulasNecesarias = (int) Math.ceil((double) cursoSeccionDocentes.size() / bloques.size());
         if (aulas.size() < aulasNecesarias) {
             throw new IllegalStateException(
@@ -50,6 +49,7 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
             );
         }
 
+        // Cargar restricciones disponibles por docente
         cargarRestriccionesParaDocentes(cursoSeccionDocentes);
 
         log.info("Configuración inicial -> Aulas: {}, Bloques: {}, Asignaciones: {}, " +
@@ -57,9 +57,10 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
                 aulas.size(), bloques.size(), cursoSeccionDocentes.size(),
                 bloquesNecesarios, aulasNecesarias);
 
-        // Distribuir asignaciones iniciales en bloques diferentes
-        List<AsignacionHorario> asignacionesIniciales = crearAsignacionesDistribuidas(
-                cursoSeccionDocentes, bloques, aulas);
+        // Generar asignaciones sin definir bloque ni aula (libres)
+        List<AsignacionHorario> asignacionesIniciales = cursoSeccionDocentes.stream()
+                .map(csd -> new AsignacionHorario(UUID.randomUUID(), csd, null, null))
+                .collect(Collectors.toList());
 
         solucion.setAulaList(aulas);
         solucion.setBloqueHorarioList(bloques);
@@ -69,40 +70,10 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
         return solucion;
     }
 
-    private List<AsignacionHorario> crearAsignacionesDistribuidas(
-            List<CursoSeccionDocente> cursoSeccionDocentes,
-            List<BloqueHorario> bloques,
-            List<Aula> aulas) {
-
-        List<AsignacionHorario> asignaciones = new ArrayList<>();
-        int totalAsignaciones = cursoSeccionDocentes.size();
-        int asignacionesPorBloque = (int) Math.ceil((double) totalAsignaciones / bloques.size());
-
-        for (int i = 0; i < cursoSeccionDocentes.size(); i++) {
-            CursoSeccionDocente csd = cursoSeccionDocentes.get(i);
-
-            // Distribuir en diferentes bloques
-            int bloqueIndex = i % bloques.size();
-            int aulaIndex = (i / bloques.size()) % aulas.size();
-
-            AsignacionHorario asignacion = new AsignacionHorario(
-                    UUID.randomUUID(),
-                    csd,
-                    aulas.get(aulaIndex),
-                    bloques.get(bloqueIndex)
-            );
-            asignaciones.add(asignacion);
-        }
-
-        log.info("Creadas {} asignaciones iniciales distribuidas en {} bloques con {} aulas",
-                asignaciones.size(), bloques.size(), aulas.size());
-
-        return asignaciones;
-    }
-
     private void cargarRestriccionesParaDocentes(List<CursoSeccionDocente> cursoSeccionDocentes) {
         Set<Docente> docentesUnicos = cursoSeccionDocentes.stream()
                 .map(CursoSeccionDocente::getDocente)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
         for (Docente docente : docentesUnicos) {
