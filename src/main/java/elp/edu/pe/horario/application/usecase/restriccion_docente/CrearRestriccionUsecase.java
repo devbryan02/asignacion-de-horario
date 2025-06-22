@@ -26,6 +26,7 @@ public class CrearRestriccionUsecase {
     private final RestriccionDocenteRepository restriccionRepository;
     private final RestriccionDtoMapper mapper;
     private final DocenteRepository docenteRepository;
+    private final ExisteTraslapeUseCase existeTraslape;
 
     @Transactional
     public RegistroResponse ejecutar(RestriccionRequest request) {
@@ -36,11 +37,10 @@ public class CrearRestriccionUsecase {
             RestriccionDocente nuevaRestriccion = mapper.toDomain(request, docente);
             List<RestriccionDocente> restriccionesExistentes = docente.getRestricciones();
 
-            // Aquí las horas ya son LocalTime, no es necesario convertirlas
             for (RestriccionDocente existente : restriccionesExistentes) {
 
                 // Verificamos si hay traslape con la nueva restricción
-                if (existeTraslape(existente, request)) {
+                if (this.existeTraslape.execute(existente, request)) {
                     // Si hay traslape, mostramos el mensaje con los detalles
                     String mensaje = String.format(
                             "Conflicto con restricción existente: Día %s de %s a %s (Tipo: %s).",
@@ -65,25 +65,5 @@ public class CrearRestriccionUsecase {
         }
     }
 
-    private boolean existeTraslape(RestriccionDocente existente, RestriccionRequest nueva) {
-        LocalTime nuevaHoraInicio = nueva.horaInicio();
-        LocalTime nuevaHoraFin = nueva.horaFin();
-        LocalTime horaInicioExistente = existente.getHoraInicio();
-        LocalTime horaFinExistente = existente.getHoraFin();
-
-        // Convertir el día de la solicitud al enum DiaSemana
-        DiaSemana diaSemanaNueva;
-        try {
-            diaSemanaNueva = DiaSemana.valueOf(nueva.diaSemana().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            log.error("Día de la semana no válido en la solicitud: {}", nueva.diaSemana());
-            return false; // Si no es válido, no hay traslape
-        }
-
-        // Realizar la comparación con el día correctamente convertido
-        return existente.getDiaSemana().equals(diaSemanaNueva) &&
-                nuevaHoraInicio.isBefore(horaFinExistente) &&
-                nuevaHoraFin.isAfter(horaInicioExistente);
-    }
 }
 

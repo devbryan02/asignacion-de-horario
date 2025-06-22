@@ -4,7 +4,10 @@ import elp.edu.pe.horario.application.dto.RestriccionDocenteDto;
 import elp.edu.pe.horario.application.dto.request.RestriccionRequest;
 import elp.edu.pe.horario.application.dto.response.RegistroResponse;
 import elp.edu.pe.horario.application.usecase.restriccion_docente.CrearRestriccionUsecase;
+import elp.edu.pe.horario.application.usecase.restriccion_docente.CrearRestriccionesBatchUseCase;
 import elp.edu.pe.horario.application.usecase.restriccion_docente.ObtenerRestriccionesUseCase;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,20 +17,23 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/restriccion-docente")
+@RequiredArgsConstructor
 public class RestriccionController {
 
     private final CrearRestriccionUsecase crearRestriccionUsecase;
     private final ObtenerRestriccionesUseCase obtenerRestricciones;
-
-    public RestriccionController(CrearRestriccionUsecase crearRestriccionUsecase, ObtenerRestriccionesUseCase obtenerRestricciones) {
-        this.crearRestriccionUsecase = crearRestriccionUsecase;
-        this.obtenerRestricciones = obtenerRestricciones;
-    }
+    private final CrearRestriccionesBatchUseCase crearRestriccionesBatchUseCase;
 
     @PostMapping
     public ResponseEntity<RegistroResponse> createRestriccion(@RequestBody RestriccionRequest request) {
         RegistroResponse response = crearRestriccionUsecase.ejecutar(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/batch")
+    public ResponseEntity<RegistroResponse> createBatchRestricciones(@RequestBody List<RestriccionRequest> requests) {
+        RegistroResponse response = crearRestriccionesBatchUseCase.execute(requests);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping

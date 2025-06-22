@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.infrastructure.persistence.repository;
 
+import elp.edu.pe.horario.application.dto.response.RegistroResponse;
 import elp.edu.pe.horario.domain.model.RestriccionDocente;
 import elp.edu.pe.horario.domain.repository.RestriccionDocenteRepository;
 import elp.edu.pe.horario.infrastructure.mapper.RestriccionDocenteMapper;
@@ -58,5 +59,13 @@ public class RestriccionDocenteRepositoryImpl implements RestriccionDocenteRepos
     @Override
     public boolean existsByDocenteId(UUID docenteId) {
         return jpaRepository.existsByDocenteId(docenteId);
+    }
+
+    @Override
+    public void saveAll(List<RestriccionDocente> restricciones) {
+        List<RestriccionDocenteEntity> entities = restricciones.stream()
+                .map(mapper::toEntity)
+                .toList();
+        jpaRepository.saveAll(entities);
     }
 }

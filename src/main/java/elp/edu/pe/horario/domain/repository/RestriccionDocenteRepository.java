@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.domain.repository;
 
+import elp.edu.pe.horario.application.dto.response.RegistroResponse;
 import elp.edu.pe.horario.domain.model.RestriccionDocente;
 
 import java.util.List;
@@ -15,5 +16,7 @@ public interface RestriccionDocenteRepository {
     List<RestriccionDocente> findAllByDocenteId(UUID docenteId);
 
     boolean existsByDocenteId(UUID docenteId);
+
+    void saveAll(List<RestriccionDocente> restricciones);
 
 }
