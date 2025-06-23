@@ -24,5 +24,4 @@ public class AulaMapper {
         entity.setTipo(domain.getTipo());
         return entity;
     }
-
 }
