@@ -22,3 +22,4 @@ public class LoadByUsernameUserCase implements UserDetailsService {
                         UsernameNotFoundException("Usuario no encontrado: " + username));
     }
 }
+

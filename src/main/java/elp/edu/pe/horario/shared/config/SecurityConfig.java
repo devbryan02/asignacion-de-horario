@@ -37,13 +37,28 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        //Rutas publicas
+                        .requestMatchers("/auth/**").permitAll()
+
+                        //Rutas privadas
+                        .requestMatchers("/aula/**").hasRole("COORDINADOR")
+                        .requestMatchers("/bloque-horario/**").hasRole("COORDINADOR")
+                        .requestMatchers("/curso/**").hasRole("COORDINADOR")
+                        .requestMatchers("/curso-seccion-docente/").hasRole("COORDINADOR")
+                        .requestMatchers("/docente/**").hasRole("COORDINADOR")
+                        .requestMatchers("/horario/**").hasRole("COORDINADOR")
+                        .requestMatchers("/horarios/**").hasRole("COORDINADOR")
+                        .requestMatchers("/periodo-academico/**").hasRole("COORDINADOR")
+                        .requestMatchers("/restriccion-docente/**").hasRole("COORDINADOR")
+                        .requestMatchers("/seccion-academico/**").hasRole("COORDINADOR")
+                        .requestMatchers("/unidad-academica/**").hasRole("COORDINADOR")
+
+                        //Rutas no configuradas
                         .anyRequest().authenticated())
+
                 .userDetailsService(loadByUsernameUserCase)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
-
 }
