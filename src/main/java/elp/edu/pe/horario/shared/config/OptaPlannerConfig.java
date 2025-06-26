@@ -26,7 +26,7 @@ public class OptaPlannerConfig {
                 .withSolutionClass(HorarioSolucion.class)
                 .withEntityClasses(AsignacionHorario.class)
                 .withConstraintProviderClass(HorarioConstraintProvider.class)
-                .withTerminationSpentLimit(java.time.Duration.ofSeconds(30)) // Tiempo máximo de ejecución
+                .withTerminationSpentLimit(java.time.Duration.ofSeconds(40)) // Tiempo máximo de ejecución
                 .withPhases(
                         new ConstructionHeuristicPhaseConfig(),  // Fase de construcción inicial
                         new LocalSearchPhaseConfig()// Fase de búsqueda local para optimizar

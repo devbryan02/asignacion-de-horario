@@ -31,8 +31,64 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 distribuirHorariosPorDia(constraintFactory),
                 evitarHuecos(constraintFactory),
                 distribuirAulas(constraintFactory),
-                incentivarDistribucionBloques(constraintFactory)
+                incentivarDistribucionBloques(constraintFactory),
+                evitarCruceDisponibilidades(constraintFactory),
+                evitarSuperposicionPorDia(constraintFactory)
         };
+    }
+
+    private Constraint evitarSuperposicionPorDia(ConstraintFactory factory) {
+        return factory
+                .forEachUniquePair(AsignacionHorario.class,
+                        equal(a -> {
+                            var csd = a.getCursoSeccionDocente();
+                            return csd != null ? csd.getDocente() : null;
+                        }))
+                .filter((a1, a2) -> {
+                    if (a1.getBloqueHorario() == null || a2.getBloqueHorario() == null) return false;
+                    return a1.getBloqueHorario().getDiaSemana() == a2.getBloqueHorario().getDiaSemana() &&
+                            bloquesSeSolapan(
+                                    a1.getBloqueHorario().getHoraInicio(),
+                                    a1.getBloqueHorario().getHoraFin(),
+                                    a2.getBloqueHorario().getHoraInicio(),
+                                    a2.getBloqueHorario().getHoraFin()
+                            );
+                })
+                .penalize(HardSoftScore.ONE_HARD.multiply(10000))
+                .asConstraint("Evitar superposición de horarios por día");
+    }
+
+    private Constraint evitarCruceDisponibilidades(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .filter(asignacion -> {
+                    if (asignacion == null) return false;
+                    var csd = asignacion.getCursoSeccionDocente();
+                    if (csd == null) return false;
+                    var docente = csd.getDocente();
+                    if (docente == null || docente.getRestricciones() == null) return false;
+                    var bloque = asignacion.getBloqueHorario();
+                    if (bloque == null || bloque.getDiaSemana() == null ||
+                            bloque.getHoraInicio() == null || bloque.getHoraFin() == null) return false;
+
+                    // Verificar si hay restricciones que se solapan
+                    var restricciones = docente.getRestricciones().stream()
+                            .filter(r -> r.getDiaSemana() == bloque.getDiaSemana())
+                            .toList();
+
+                    // Contar solapamientos
+                    long solapamientos = restricciones.stream()
+                            .filter(r -> bloquesSeSolapan(
+                                    bloque.getHoraInicio(),
+                                    bloque.getHoraFin(),
+                                    r.getHoraInicio(),
+                                    r.getHoraFin()))
+                            .count();
+
+                    return solapamientos > 1; // Si hay más de un solapamiento, hay conflicto
+                })
+                .penalize(HardSoftScore.ONE_HARD.multiply(1000))
+                .asConstraint("Evitar cruces de disponibilidades");
     }
 
     private Constraint incentivarDistribucionBloques(ConstraintFactory factory) {

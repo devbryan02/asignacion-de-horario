@@ -14,7 +14,7 @@ public class HorarioDtoMapper {
                 domain.getCursoSeccionDocente().getCurso().getNombre(),
                 domain.getCursoSeccionDocente().getDocente().getNombre(),
                 domain.getAula().getNombre(),
-                domain.getCursoSeccionDocente().getDocente().getNombre(),
+                domain.getCursoSeccionDocente().getSeccion().getNombre(),
                 domain.getBloqueHorario().getDiaSemana(),
                 domain.getBloqueHorario().getHoraInicio(),
                 domain.getBloqueHorario().getHoraFin()
