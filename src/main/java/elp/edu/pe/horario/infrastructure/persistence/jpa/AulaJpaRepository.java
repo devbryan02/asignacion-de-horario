@@ -13,3 +13,4 @@ public interface AulaJpaRepository extends JpaRepository<AulaEntity, UUID> {
     boolean existeReferenciaEnAsignacionHorario(@Param("aulaId") UUID aulaId);
 
 }
+

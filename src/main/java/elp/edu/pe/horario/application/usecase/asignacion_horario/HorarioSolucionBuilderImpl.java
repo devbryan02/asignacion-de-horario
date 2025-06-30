@@ -57,7 +57,7 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
                 aulas.size(), bloques.size(), cursoSeccionDocentes.size(),
                 bloquesNecesarios, aulasNecesarias);
 
-        // Generar asignaciones sin definir bloque ni aula (libres)
+        // Generar asignaciones sin definir bloque ni aula
         List<AsignacionHorario> asignacionesIniciales = cursoSeccionDocentes.stream()
                 .map(csd -> new AsignacionHorario(UUID.randomUUID(), csd, null, null))
                 .collect(Collectors.toList());

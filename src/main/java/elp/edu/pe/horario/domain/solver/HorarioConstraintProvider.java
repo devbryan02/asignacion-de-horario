@@ -31,10 +31,125 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 distribuirHorariosPorDia(constraintFactory),
                 evitarHuecos(constraintFactory),
                 distribuirAulas(constraintFactory),
-                incentivarDistribucionBloques(constraintFactory),
                 evitarCruceDisponibilidades(constraintFactory),
-                evitarSuperposicionPorDia(constraintFactory)
+                evitarSuperposicionPorDia(constraintFactory),
+                evitarMultiplesCursosPorSeccionPorDia(constraintFactory),
+                distribuirCursosPorSemana(constraintFactory),
+                limitarCargaDiariaPorSeccion(constraintFactory),
+                evitarCrucesPeriodoAcademico(constraintFactory),
+                distribuirCursosSeccionPorDia(constraintFactory),
+                maximizarUsoAulas(constraintFactory),
+                incentivarDistribucionBloques(constraintFactory),
+                evitarConcentracionBloques(constraintFactory),
+                distribuirBloquesPorDia(constraintFactory),
+
         };
+    }
+
+    private Constraint limitarCargaDiariaPorSeccion(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(
+                        a -> {
+                            var csd = a.getCursoSeccionDocente();
+                            return csd != null ? csd.getSeccion() : null;
+                        },
+                        a -> a.getBloqueHorario().getDiaSemana(),
+                        ConstraintCollectors.sum(a -> {
+                            var bloque = a.getBloqueHorario();
+                            if (bloque == null) return 0;
+                            return Math.toIntExact(Duration.between(bloque.getHoraInicio(), bloque.getHoraFin()).toHours());
+                        })
+                )
+                .filter((seccion, dia, horasTotales) -> horasTotales > 6) // máximo 6 horas por día
+                .penalize(HardSoftScore.ONE_HARD.multiply(50000),
+                        (seccion, dia, horasTotales) -> (int)(horasTotales - 6))
+                .asConstraint("Limitar horas diarias por sección");
+    }
+
+    private Constraint distribuirCursosSeccionPorDia(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(
+                        a -> {
+                            var csd = a.getCursoSeccionDocente();
+                            return csd != null ? csd.getSeccion() : null;
+                        },
+                        a -> a.getBloqueHorario().getDiaSemana(),
+                        ConstraintCollectors.count()
+                )
+                .filter((seccion, dia, count) -> count > 3) // máximo 3 cursos por día
+                .penalize(HardSoftScore.ONE_HARD.multiply(40000),
+                        (seccion, dia, count) -> count - 3)
+                .asConstraint("Distribuir cursos por día para cada sección");
+    }
+
+    private Constraint evitarCrucesPeriodoAcademico(ConstraintFactory factory) {
+        return factory
+                .forEachUniquePair(AsignacionHorario.class,
+                        equal(a -> {
+                            var csd = a.getCursoSeccionDocente();
+                            return csd != null ? csd.getSeccion().getPeriodo() : null;
+                        }))
+                .filter((a1, a2) -> {
+                    var csd1 = a1.getCursoSeccionDocente();
+                    var csd2 = a2.getCursoSeccionDocente();
+                    if (csd1 == null || csd2 == null) return false;
+
+                    // Verificar si es la misma sección en el mismo período
+                    boolean mismaSeccion = csd1.getSeccion().equals(csd2.getSeccion());
+                    if (!mismaSeccion) return false;
+
+                    // Verificar superposición de horarios
+                    var bloque1 = a1.getBloqueHorario();
+                    var bloque2 = a2.getBloqueHorario();
+                    if (bloque1 == null || bloque2 == null) return false;
+
+                    return bloque1.getDiaSemana().equals(bloque2.getDiaSemana()) &&
+                            bloquesSeSolapan(
+                                    bloque1.getHoraInicio(),
+                                    bloque1.getHoraFin(),
+                                    bloque2.getHoraInicio(),
+                                    bloque2.getHoraFin()
+                            );
+                })
+                .penalize(HardSoftScore.ONE_HARD.multiply(100000))
+                .asConstraint("Evitar cruces de horarios por período académico");
+    }
+
+    // Restricción para evitar que una sección tenga más de un curso en el mismo día
+    private Constraint evitarMultiplesCursosPorSeccionPorDia(ConstraintFactory factory) {
+        return factory
+                .forEachUniquePair(AsignacionHorario.class,
+                        equal(a -> {
+                            var csd = a.getCursoSeccionDocente();
+                            return csd != null ? csd.getSeccion() : null;
+                        }),
+                        equal(a -> a.getBloqueHorario().getDiaSemana()))
+                .filter((a1, a2) ->
+                        a1.getCursoSeccionDocente() != null &&
+                                a2.getCursoSeccionDocente() != null &&
+                                !a1.getCursoSeccionDocente().getCurso().equals(a2.getCursoSeccionDocente().getCurso()))
+                .penalize(HardSoftScore.ONE_HARD.multiply(10000))
+                .asConstraint("Evitar múltiples cursos por sección en el mismo día");
+    }
+
+    // Restricción para distribuir las clases de un curso a lo largo de la semana
+    private Constraint distribuirCursosPorSemana(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(
+                        a -> {
+                            var csd = a.getCursoSeccionDocente();
+                            return csd != null ? csd.getCurso() : null;
+                        },
+                        a -> a.getBloqueHorario().getDiaSemana(),
+                        ConstraintCollectors.count()
+                )
+                .filter((curso, dia, count) -> count > 1)
+                .penalize(HardSoftScore.ONE_SOFT.multiply(30),
+                        (curso, dia, count) -> count - 1)
+                .asConstraint("Distribuir clases del mismo curso en diferentes días");
     }
 
     private Constraint evitarSuperposicionPorDia(ConstraintFactory factory) {
@@ -92,11 +207,39 @@ public class HorarioConstraintProvider implements ConstraintProvider {
     }
 
     private Constraint incentivarDistribucionBloques(ConstraintFactory factory) {
+        // Primera parte: Recompensar el uso de bloques diferentes
         return factory
                 .forEach(AsignacionHorario.class)
                 .groupBy(AsignacionHorario::getBloqueHorario)
-                .reward(HardSoftScore.ONE_SOFT.multiply(15))
-                .asConstraint("Incentivar uso de más bloques distintos");
+                .reward(HardSoftScore.ONE_SOFT.multiply(5000))
+                .asConstraint("Incentivar uso de bloques distintos");
+    }
+
+    // Nueva restricción para penalizar la concentración en pocos bloques
+    private Constraint evitarConcentracionBloques(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(
+                        AsignacionHorario::getBloqueHorario,
+                        ConstraintCollectors.count()
+                )
+                .filter((bloque, count) -> count > 2)
+                .penalize(HardSoftScore.ONE_HARD.multiply(20000),
+                        (bloque, count) -> count - 2)
+                .asConstraint("Evitar concentración en pocos bloques");
+    }
+
+    // Nueva restricción para distribuir bloques por día
+    private Constraint distribuirBloquesPorDia(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(
+                        a -> a.getBloqueHorario().getDiaSemana(),
+                        ConstraintCollectors.countDistinct(AsignacionHorario::getBloqueHorario)
+                )
+                .reward(HardSoftScore.ONE_SOFT.multiply(3000),
+                        (dia, countBloques) -> countBloques)
+                .asConstraint("Distribuir bloques por día");
     }
 
 
@@ -124,28 +267,17 @@ public class HorarioConstraintProvider implements ConstraintProvider {
     private Constraint docenteNoSuperpuesto(ConstraintFactory factory) {
         return factory
                 .forEachUniquePair(AsignacionHorario.class,
-                        equal(a -> {
-                            if (a.getCursoSeccionDocente() == null) return null;
-                            return a.getCursoSeccionDocente().getDocente();
-                        }))
+                        equal(a -> a.getCursoSeccionDocente().getDocente()))
                 .filter((a1, a2) ->
-                        a1.getCursoSeccionDocente() != null &&
-                                a2.getCursoSeccionDocente() != null &&
-                                a1.getCursoSeccionDocente().getDocente() != null &&
-                                a2.getCursoSeccionDocente().getDocente() != null &&
-                                a1.getBloqueHorario() != null &&
-                                a2.getBloqueHorario() != null &&
-                                a1.getBloqueHorario().getDiaSemana() != null &&
-                                a2.getBloqueHorario().getDiaSemana() != null &&
-                                a1.getBloqueHorario().getDiaSemana().equals(a2.getBloqueHorario().getDiaSemana()) &&
+                        a1.getBloqueHorario().getDiaSemana().equals(a2.getBloqueHorario().getDiaSemana()) &&
                                 bloquesSeSolapan(
                                         a1.getBloqueHorario().getHoraInicio(),
                                         a1.getBloqueHorario().getHoraFin(),
                                         a2.getBloqueHorario().getHoraInicio(),
                                         a2.getBloqueHorario().getHoraFin()
                                 ))
-                .penalize(HardSoftScore.of(100000, 0))
-                .asConstraint("Docente duplicado en mismo bloque");
+                .penalize(HardSoftScore.ONE_HARD.multiply(100000))
+                .asConstraint("Docente con horarios superpuestos");
     }
 
     // Regla 3: Evitar bloques que el docente ha restringido
@@ -157,51 +289,27 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                     var csd = asignacion.getCursoSeccionDocente();
                     if (csd == null) return false;
                     var docente = csd.getDocente();
+                    // Si el docente no tiene restricciones, permitir cualquier bloque
                     if (docente == null || docente.getRestricciones() == null) return false;
                     var bloque = asignacion.getBloqueHorario();
                     if (bloque == null || bloque.getDiaSemana() == null ||
                             bloque.getHoraInicio() == null || bloque.getHoraFin() == null) return false;
 
-                    // Buscar si hay alguna restricción BLOQUEADO que solape con el bloque
+                    // Solo verificar restricciones si el docente las tiene definidas
                     return docente.getRestricciones().stream().anyMatch(restriccion ->
                             restriccion.getTipoRestriccion() == TipoRestriccion.BLOQUEADO &&
                                     restriccion.getDiaSemana() == bloque.getDiaSemana() &&
                                     restriccion.getHoraInicio() != null && restriccion.getHoraFin() != null &&
-                                    bloque.getHoraInicio().isBefore(restriccion.getHoraFin()) &&
-                                    bloque.getHoraFin().isAfter(restriccion.getHoraInicio())
+                                    bloquesSeSolapan(
+                                            bloque.getHoraInicio(),
+                                            bloque.getHoraFin(),
+                                            restriccion.getHoraInicio(),
+                                            restriccion.getHoraFin()
+                                    )
                     );
                 })
-                .penalize(HardSoftScore.ONE_HARD.multiply(100), asignacion -> {
-                    var csd = asignacion.getCursoSeccionDocente();
-                    var docente = csd != null ? csd.getDocente() : null;
-                    var bloque = asignacion.getBloqueHorario();
-
-                    if (docente == null || docente.getRestricciones() == null || bloque == null
-                            || bloque.getDiaSemana() == null
-                            || bloque.getHoraInicio() == null || bloque.getHoraFin() == null) {
-                        return 0;
-                    }
-
-                    return docente.getRestricciones().stream()
-                            .filter(restriccion ->
-                                    restriccion.getTipoRestriccion() == TipoRestriccion.BLOQUEADO &&
-                                            restriccion.getDiaSemana() == bloque.getDiaSemana() &&
-                                            restriccion.getHoraInicio() != null && restriccion.getHoraFin() != null &&
-                                            bloque.getHoraInicio().isBefore(restriccion.getHoraFin()) &&
-                                            bloque.getHoraFin().isAfter(restriccion.getHoraInicio())
-                            )
-                            .mapToInt(restriccion -> {
-                                var inicio = bloque.getHoraInicio().isAfter(restriccion.getHoraInicio())
-                                        ? bloque.getHoraInicio()
-                                        : restriccion.getHoraInicio();
-                                var fin = bloque.getHoraFin().isBefore(restriccion.getHoraFin())
-                                        ? bloque.getHoraFin()
-                                        : restriccion.getHoraFin();
-                                return (int) Duration.between(inicio, fin).toMinutes();
-                            })
-                            .sum();
-                })
-                .asConstraint("Evitar bloques restringidos por docente (suavizado)");
+                .penalize(HardSoftScore.ONE_HARD.multiply(100))
+                .asConstraint("Evitar bloques restringidos por docente");
     }
 
     private Constraint preferirBloquesDisponibles(ConstraintFactory factory) {
@@ -212,18 +320,23 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                     var csd = asignacion.getCursoSeccionDocente();
                     if (csd == null) return false;
                     var docente = csd.getDocente();
+                    // Si el docente no tiene restricciones, no aplicar recompensa
                     if (docente == null || docente.getRestricciones() == null) return false;
                     var bloque = asignacion.getBloqueHorario();
                     if (bloque == null || bloque.getDiaSemana() == null ||
                             bloque.getHoraInicio() == null || bloque.getHoraFin() == null) return false;
 
-                    // Recompensar si el docente marcó este bloque como DISPONIBLE
+                    // Solo aplicar recompensa si el docente tiene restricciones definidas
                     return docente.getRestricciones().stream().anyMatch(restriccion ->
                             restriccion.getTipoRestriccion() == TipoRestriccion.DISPONIBLE &&
                                     restriccion.getDiaSemana() == bloque.getDiaSemana() &&
                                     restriccion.getHoraInicio() != null && restriccion.getHoraFin() != null &&
-                                    bloque.getHoraInicio().isBefore(restriccion.getHoraFin()) &&
-                                    bloque.getHoraFin().isAfter(restriccion.getHoraInicio())
+                                    bloquesSeSolapan(
+                                            bloque.getHoraInicio(),
+                                            bloque.getHoraFin(),
+                                            restriccion.getHoraInicio(),
+                                            restriccion.getHoraFin()
+                                    )
                     );
                 })
                 .reward(HardSoftScore.ONE_SOFT.multiply(40))
@@ -354,7 +467,7 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                                         a2.getBloqueHorario().getHoraFin()
                                 )
                 )
-                .penalize(HardSoftScore.of(10000, 0))
+                .penalize(HardSoftScore.of(100000, 0))
                 .asConstraint("Sección con horarios superpuestos");
     }
 
@@ -440,10 +553,18 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                         asignacion -> asignacion != null ? asignacion.getAula() : null,
                         ConstraintCollectors.count()
                 )
-                .filter((aula, count) -> aula != null && count > 3)  // más de 3 clases por aula
-                .penalize(HardSoftScore.ONE_SOFT.multiply(20),
-                        (aula, count) -> count - 3)
+                .filter((aula, count) -> aula != null && count > 2)  // máximo 2 clases por aula por día
+                .penalize(HardSoftScore.ONE_HARD.multiply(30000),    // aumentamos penalización
+                        (aula, count) -> count - 2)
                 .asConstraint("Distribuir clases entre aulas");
+    }
+
+    private Constraint maximizarUsoAulas(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(AsignacionHorario::getAula)
+                .reward(HardSoftScore.ONE_SOFT.multiply(5000))
+                .asConstraint("Maximizar uso de aulas diferentes");
     }
 
     /**

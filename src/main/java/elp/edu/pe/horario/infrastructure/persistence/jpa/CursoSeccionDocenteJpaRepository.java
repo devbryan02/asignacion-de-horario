@@ -11,4 +11,6 @@ public interface CursoSeccionDocenteJpaRepository extends JpaRepository<CursoSec
     boolean existsByCursoId(UUID cursoId);
     boolean existsBySeccionId(UUID seccionId);
     boolean existsByCursoIdAndSeccionId(UUID cursoId, UUID seccionId);
+    long countByCursoIdAndDocenteId(UUID cursoId, UUID docenteId);
 }
+

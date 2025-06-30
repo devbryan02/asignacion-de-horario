@@ -72,4 +72,9 @@ public class CursoSeccionDocenteRepositoryImpl implements CursoSeccionDocenteRep
     public boolean existsBySeccionId(UUID seccionId) {
         return jpaRepository.existsBySeccionId(seccionId) ;
     }
+
+    @Override
+    public long countByCursoIdAndDocenteId(UUID cursoId, UUID docenteId) {
+        return jpaRepository.countByCursoIdAndDocenteId(cursoId, docenteId);
+    }
 }
