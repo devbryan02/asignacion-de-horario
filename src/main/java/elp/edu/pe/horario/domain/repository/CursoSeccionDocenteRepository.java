@@ -18,5 +18,6 @@ public interface CursoSeccionDocenteRepository {
     boolean existsByCursoId(UUID cursoId);
     boolean existsBySeccionId(UUID seccionId);
     long countByCursoIdAndDocenteId(UUID cursoId, UUID docenteId);
+    List<CursoSeccionDocente> findByPeriodoId(UUID periodoId);
 
 }

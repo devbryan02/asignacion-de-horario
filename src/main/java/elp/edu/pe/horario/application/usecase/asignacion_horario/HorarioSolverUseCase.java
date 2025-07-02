@@ -25,7 +25,6 @@ public class HorarioSolverUseCase {
     private final SolverManager<HorarioSolucion, UUID> solverManager;
     private final AsignacionHorarioRepository asignacionHorarioRepository;
     private final Logger log = LoggerFactory.getLogger(HorarioSolverUseCase.class);
-    private final EntityManager entityManager;
     private final MensajeGeneracionUseCase mostrarMensajeGeneracionUseCase;
     private final AnalizarSolucionUseCase analizarSolucionHorarioUseCase;
 
@@ -40,9 +39,6 @@ public class HorarioSolverUseCase {
             if (solucionFinal == null) {
                 throw new IllegalStateException("No se pudo resolver el horario");
             }
-
-            entityManager.clear();
-            asignacionHorarioRepository.deleteAllInBatch();
 
             List<AsignacionHorario> nuevasAsignaciones = solucionFinal.getAsignacionHorarioList();
             nuevasAsignaciones.forEach(asignacion -> {

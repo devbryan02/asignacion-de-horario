@@ -77,4 +77,12 @@ public class CursoSeccionDocenteRepositoryImpl implements CursoSeccionDocenteRep
     public long countByCursoIdAndDocenteId(UUID cursoId, UUID docenteId) {
         return jpaRepository.countByCursoIdAndDocenteId(cursoId, docenteId);
     }
+
+    @Override
+    public List<CursoSeccionDocente> findByPeriodoId(UUID periodoId) {
+        return jpaRepository.findByPeriodoId(periodoId)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
 }

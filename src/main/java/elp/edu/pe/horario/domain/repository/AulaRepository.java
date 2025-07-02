@@ -14,5 +14,8 @@ public interface AulaRepository {
     void deleteById(UUID id);
     void update(Aula aula);
     boolean existeReferenciaEnAsignacionHorario(UUID id);
+    List<Aula> findByPeriodoId(UUID periodoId);
 
 }
+
+

@@ -4,34 +4,33 @@ import elp.edu.pe.horario.application.dto.response.GeneracionHorarioResponse;
 import elp.edu.pe.horario.application.usecase.asignacion_horario.HorarioSolverUseCase;
 import elp.edu.pe.horario.domain.solver.HorarioSolucion;
 import elp.edu.pe.horario.domain.solver.HorarioSolucionBuilder;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/horario")
+@RequiredArgsConstructor
 public class HorarioSolverController {
 
     private final HorarioSolverUseCase horarioSolverUseCase;
     private final HorarioSolucionBuilder  horarioSolucionBuilder;
     private final static Logger log = LoggerFactory.getLogger(HorarioSolverController.class);
 
-    public HorarioSolverController(HorarioSolverUseCase horarioSolverUseCase, HorarioSolucionBuilder horarioSolucionBuilder) {
-        this.horarioSolverUseCase = horarioSolverUseCase;
-        this.horarioSolucionBuilder = horarioSolucionBuilder;
-    }
-
     @PostMapping("/resolver")
-    public ResponseEntity<?> resolverHorario() {
+    public ResponseEntity<?> resolverHorario(@RequestParam UUID periodoId) {
         try {
             // Construimos el problema inicial
-            HorarioSolucion problema = horarioSolucionBuilder.construirDesdeBaseDeDatos();
+            HorarioSolucion problema = horarioSolucionBuilder.construirDesdeBaseDeDatos(periodoId);
             // Intentamos resolver
             GeneracionHorarioResponse solucion = horarioSolverUseCase.ejecutar(problema);
             return ResponseEntity.ok(solucion);
@@ -43,5 +42,11 @@ public class HorarioSolverController {
                     .body(Collections.singletonMap("error", e.getMessage()));
         }
     }
-
 }
+
+
+
+
+
+
+

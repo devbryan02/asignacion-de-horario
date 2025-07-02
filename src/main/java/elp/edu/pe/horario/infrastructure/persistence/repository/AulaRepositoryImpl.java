@@ -45,7 +45,6 @@ public class AulaRepositoryImpl implements AulaRepository {
     public void deleteById(UUID id) {
         aulaJpaRepository.deleteById(id);
     }
-
     @Override
     public void update(Aula aula) {
         aulaJpaRepository.save(mapper.toEntity(aula));
@@ -54,5 +53,13 @@ public class AulaRepositoryImpl implements AulaRepository {
     @Override
     public boolean existeReferenciaEnAsignacionHorario(UUID id) {
         return aulaJpaRepository.existeReferenciaEnAsignacionHorario(id);
+    }
+
+    @Override
+    public List<Aula> findByPeriodoId(UUID periodoId) {
+        return aulaJpaRepository.findByPeriodoId(periodoId)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

@@ -54,5 +54,12 @@ public class BloqueHorarioRepositoryImpl implements BloqueHorarioRepository {
         return jpaRepository.existeReferenciaEnAsignacionHorario(id);
     }
 
+    @Override
+    public List<BloqueHorario> findByPeriodoId(UUID periodoId) {
+        return jpaRepository.findByPeriodoId(periodoId)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
 
 }

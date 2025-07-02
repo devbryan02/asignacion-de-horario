@@ -4,6 +4,7 @@ import elp.edu.pe.horario.domain.model.*;
 import elp.edu.pe.horario.domain.repository.*;
 import elp.edu.pe.horario.domain.solver.HorarioSolucion;
 import elp.edu.pe.horario.domain.solver.HorarioSolucionBuilder;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,14 +24,22 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
     private final CursoSeccionDocenteRepository cursoSeccionDocenteRepository;
     private final RestriccionDocenteRepository restriccionDocenteRepository;
 
+    // Repositories para limpiar asignaciones previas
+    private final EntityManager entityManager;
+    private final AsignacionHorarioRepository asignacionHorarioRepository;
+
     @Transactional
     @Override
-    public HorarioSolucion construirDesdeBaseDeDatos() {
+    public HorarioSolucion construirDesdeBaseDeDatos(UUID periodoId) {
         HorarioSolucion solucion = new HorarioSolucion();
 
-        List<Aula> aulas = aulaRepository.findAll();
-        List<BloqueHorario> bloques = bloqueHorarioRepository.findAll();
-        List<CursoSeccionDocente> cursoSeccionDocentes = cursoSeccionDocenteRepository.findAll();
+        // Limpiar asignaciones previas
+        entityManager.clear();
+        asignacionHorarioRepository.deleteAllInBatch();
+
+        List<Aula> aulas = aulaRepository.findByPeriodoId(periodoId);
+        List<BloqueHorario> bloques = bloqueHorarioRepository.findByPeriodoId(periodoId);
+        List<CursoSeccionDocente> cursoSeccionDocentes = cursoSeccionDocenteRepository.findByPeriodoId(periodoId);
 
         // Validaciones mínimas
         int bloquesNecesarios = (int) Math.ceil(cursoSeccionDocentes.size() / 3.0);
