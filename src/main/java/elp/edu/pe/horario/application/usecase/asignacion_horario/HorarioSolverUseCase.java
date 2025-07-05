@@ -4,7 +4,6 @@ import elp.edu.pe.horario.application.dto.response.GeneracionHorarioResponse;
 import elp.edu.pe.horario.domain.model.AsignacionHorario;
 import elp.edu.pe.horario.domain.repository.AsignacionHorarioRepository;
 import elp.edu.pe.horario.domain.solver.HorarioSolucion;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.optaplanner.core.api.solver.SolverJob;

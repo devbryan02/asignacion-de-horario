@@ -19,17 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserLoginUseCase userLoginUseCase;
-    private final UserRegisterUseCase userRegisterUseCase;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         AuthResponse response = userLoginUseCase.execute(request);
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@RequestBody AuthRequest request) {
-        RegisterResponse response = userRegisterUseCase.execute(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

@@ -6,6 +6,7 @@ import elp.edu.pe.horario.application.mapper.AulaDtoMapper;
 import elp.edu.pe.horario.domain.model.Aula;
 import elp.edu.pe.horario.domain.repository.AulaRepository;
 import elp.edu.pe.horario.shared.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class ActualizarAulaUseCase {
         this.mapper = mapper;
     }
 
+    @Transactional
     public RegistroResponse ejecutar(AulaRequest aulaNuevo, UUID aulaId) {
 
         try{
