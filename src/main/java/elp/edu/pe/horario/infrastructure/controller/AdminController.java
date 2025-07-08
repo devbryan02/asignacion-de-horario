@@ -21,9 +21,9 @@ public class AdminController {
     private final UserRegisterUseCase userRegisterUseCase;
     private final FindUsersUseCase findUsersUseCase;
 
-    @PutMapping
-    public ResponseEntity<RegistroResponse> updateUser(@RequestBody UpdateUserRequest request ) {
-        var response = userUpdateUseCase.execute(request);
+    @PutMapping("/users/{id}")
+    public ResponseEntity<RegistroResponse> updateUser(@RequestBody UpdateUserRequest request, @PathVariable Long id) {
+        var response = userUpdateUseCase.execute(request, id);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -42,9 +42,5 @@ public class AdminController {
     public ResponseEntity<?> findUserById(@PathVariable Long id) {
         return ResponseEntity.ok(findUsersUseCase.findById(id));
     }
-
-
-
-
 
 }

@@ -53,6 +53,8 @@ public class SecurityConfig {
                         .requestMatchers("/restriccion-docente/**").hasRole("COORDINADOR")
                         .requestMatchers("/seccion-academico/**").hasRole("COORDINADOR")
                         .requestMatchers("/unidad-academica/**").hasRole("COORDINADOR")
+
+                        //Rutas de administracion
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         //Rutas no configuradas

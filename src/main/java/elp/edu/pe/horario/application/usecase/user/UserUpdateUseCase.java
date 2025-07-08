@@ -18,10 +18,10 @@ public class UserUpdateUseCase {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public RegistroResponse execute(UpdateUserRequest request) {
+    public RegistroResponse execute(UpdateUserRequest request, Long userId) {
 
         try{
-            var existingUser = userJpaRepository.findById(request.idUser())
+            var existingUser = userJpaRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             mapper.updateToEntity(existingUser, request, passwordEncoder );

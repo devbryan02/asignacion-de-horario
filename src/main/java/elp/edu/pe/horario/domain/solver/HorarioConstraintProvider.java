@@ -49,13 +49,15 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 limitarHorasContratadasPorDocente(constraintFactory),
                 limitarHorasPorDiaPorDocente(constraintFactory),
                 limitarCargaDiariaPorSeccion(constraintFactory),
-                distribuirCursosSeccionPorDia(constraintFactory),
-                evitarCrucesPeriodoAcademico(constraintFactory),
-                evitarMultiplesCursosPorSeccionPorDia(constraintFactory),
-                evitarSuperposicionPorDia(constraintFactory),
+                //distribuirCursosSeccionPorDia(constraintFactory),
+                //evitarCrucesPeriodoAcademico(constraintFactory),
+                //evitarMultiplesCursosPorSeccionPorDia(constraintFactory),
+                //evitarSuperposicionPorDia(constraintFactory),
                 evitarCruceDisponibilidades(constraintFactory),
-                evitarConcentracionBloques(constraintFactory),
-                distribuirAulas(constraintFactory),
+                //evitarConcentracionBloques(constraintFactory),
+                //distribuirAulas(constraintFactory),
+                cumplirHorasRequeridas(constraintFactory),
+                distribuirCursoEnDiferentesDias(constraintFactory),
 
                 // Restricciones SOFT - Preferencias
                 balancearHorasDocente(constraintFactory),
@@ -65,7 +67,8 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 distribuirCursosPorSemana(constraintFactory),
                 incentivarDistribucionBloques(constraintFactory),
                 distribuirBloquesPorDia(constraintFactory),
-                maximizarUsoAulas(constraintFactory)
+                maximizarUsoAulas(constraintFactory),
+                incentivarUsoCompartidoDeBloques(constraintFactory)
         };
     }
 
@@ -185,30 +188,38 @@ public class HorarioConstraintProvider implements ConstraintProvider {
     // ================= RESTRICCIONES HARD =================
 
     private Constraint aulaNoSuperpuesta(ConstraintFactory factory) {
-        return crearRestriccionNoSuperposicion(
-                factory,
-                AsignacionHorario::getAula,
-                "Aula ocupada en mismo bloque",
-                HARD_SCORE_HIGH
-        );
+        return factory
+                .forEachUniquePair(AsignacionHorario.class,
+                        equal(AsignacionHorario::getBloqueHorario))
+                .filter((a1, a2) -> a1.getAula() != null && a1.getAula().equals(a2.getAula())) // Misma aula
+                .penalize(HardSoftScore.ONE_HARD.multiply(HARD_SCORE_HIGH))
+                .asConstraint("Aula ocupada en mismo bloque");
     }
 
     private Constraint docenteNoSuperpuesto(ConstraintFactory factory) {
-        return crearRestriccionNoSuperposicion(
-                factory,
-                this::extraerDocente,
-                "Docente con horarios superpuestos",
-                HARD_SCORE_HIGH
-        );
+        return factory
+                .forEachUniquePair(AsignacionHorario.class,
+                        equal(AsignacionHorario::getBloqueHorario)) // Mismo bloque
+                .filter((a1, a2) -> {
+                    Docente d1 = extraerDocente(a1);
+                    Docente d2 = extraerDocente(a2);
+                    return d1 != null && d1.equals(d2); // Mismo docente
+                })
+                .penalize(HardSoftScore.ONE_HARD.multiply(HARD_SCORE_HIGH))
+                .asConstraint("Docente con horarios superpuestos");
     }
 
     private Constraint seccionNoSuperpuesta(ConstraintFactory factory) {
-        return crearRestriccionNoSuperposicion(
-                factory,
-                this::extraerSeccion,
-                "Sección con horarios superpuestos",
-                HARD_SCORE_HIGH
-        );
+        return factory
+                .forEachUniquePair(AsignacionHorario.class,
+                        equal(AsignacionHorario::getBloqueHorario)) // Mismo bloque
+                .filter((a1, a2) -> {
+                    Seccion s1 = extraerSeccion(a1);
+                    Seccion s2 = extraerSeccion(a2);
+                    return s1 != null && s1.equals(s2); // Misma sección
+                })
+                .penalize(HardSoftScore.ONE_HARD.multiply(HARD_SCORE_HIGH))
+                .asConstraint("Sección con horarios superpuestos");
     }
 
     private Constraint evitarSuperposicionPorDia(ConstraintFactory factory) {
@@ -373,6 +384,33 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 .penalize(HardSoftScore.ONE_HARD.multiply(30000), (aula, count) -> count - MAX_CLASES_POR_AULA)
                 .asConstraint("Distribuir clases entre aulas");
     }
+    private Constraint cumplirHorasRequeridas(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(a -> a.getCursoSeccionDocente(),
+                        ConstraintCollectors.sum(a -> calcularHorasBloque(a.getBloqueHorario())))
+                .filter((csd, horasAsignadas) -> {
+                    Integer horasRequeridas = csd.getCurso().getHorasSemanales();
+                    return horasRequeridas != null && horasAsignadas < horasRequeridas;
+                })
+                .penalize(HardSoftScore.ONE_HARD.multiply(HARD_SCORE_HIGH),
+                        (csd, horasAsignadas) -> {
+                            Integer horasRequeridas = csd.getCurso().getHorasSemanales();
+                            return horasRequeridas - horasAsignadas;
+                        })
+                .asConstraint("Cumplir horas semanales requeridas");
+    }
+
+    private Constraint distribuirCursoEnDiferentesDias(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(a -> a.getCursoSeccionDocente(),
+                        ConstraintCollectors.countDistinct(a -> a.getBloqueHorario().getDiaSemana()))
+                .reward(HardSoftScore.ONE_SOFT.multiply(SOFT_SCORE_HIGH),
+                        (csd, diasDistintos) -> diasDistintos)
+                .asConstraint("Distribuir curso en diferentes días");
+    }
+
 
     // ================= RESTRICCIONES SOFT =================
 
@@ -499,5 +537,14 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 .groupBy(AsignacionHorario::getAula)
                 .reward(HardSoftScore.ONE_SOFT.multiply(SOFT_SCORE_HIGH))
                 .asConstraint("Maximizar uso de aulas diferentes");
+    }
+
+    private Constraint incentivarUsoCompartidoDeBloques(ConstraintFactory factory) {
+        return factory
+                .forEach(AsignacionHorario.class)
+                .groupBy(AsignacionHorario::getBloqueHorario, ConstraintCollectors.count())
+                .filter((bloque, count) -> count > 1)
+                .reward(HardSoftScore.ONE_SOFT, (bloque, count) -> count)
+                .asConstraint("Incentivar uso compartido de bloques");
     }
 }
