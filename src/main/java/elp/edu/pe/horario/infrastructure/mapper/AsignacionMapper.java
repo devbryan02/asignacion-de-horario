@@ -15,6 +15,9 @@ public class AsignacionMapper {
 
 
     public AsignacionHorario toDomain(AsignacionHorarioEntity entity){
+        if( entity == null) {
+            return null;
+        }
         return new AsignacionHorario(
                 entity.getId(),
                 cursoSeccionDocenteMapper.toDomain(entity.getCursoSeccion()),
@@ -24,6 +27,9 @@ public class AsignacionMapper {
     }
 
     public AsignacionHorarioEntity toEntity(AsignacionHorario domain){
+        if (domain == null) {
+            return null;
+        }
         var entity = new AsignacionHorarioEntity();
         if (domain.getId() != null) {
             entity.setId(domain.getId());

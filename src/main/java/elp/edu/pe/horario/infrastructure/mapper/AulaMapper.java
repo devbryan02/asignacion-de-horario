@@ -8,6 +8,10 @@ import org.springframework.stereotype.Component;
 public class AulaMapper {
 
     public Aula toDomain(AulaEntity entity){
+        if (entity == null) {
+            return null;
+        }
+
         return new Aula(
                 entity.getId(),
                 entity.getNombre(),
@@ -17,6 +21,9 @@ public class AulaMapper {
     }
 
     public AulaEntity toEntity(Aula domain){
+        if (domain == null) {
+            return null;
+        }
         var entity = new AulaEntity();
         entity.setId(domain.getId());
         entity.setNombre(domain.getNombre());

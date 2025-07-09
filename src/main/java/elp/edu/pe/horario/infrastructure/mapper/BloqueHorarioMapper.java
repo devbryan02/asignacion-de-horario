@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 public class BloqueHorarioMapper {
 
     public BloqueHorario toDomain(BloqueHorarioEntity entity){
+        if (entity == null) {
+            return null;
+        }
         return new BloqueHorario(
                 entity.getId(),
                 entity.getDiaSemana(),
@@ -18,6 +21,9 @@ public class BloqueHorarioMapper {
     }
 
     public BloqueHorarioEntity toEntity(BloqueHorario domain){
+        if (domain == null) {
+            return null;
+        }
         var entity = new BloqueHorarioEntity();
         entity.setId(domain.getId());
         entity.setDiaSemana(domain.getDiaSemana());

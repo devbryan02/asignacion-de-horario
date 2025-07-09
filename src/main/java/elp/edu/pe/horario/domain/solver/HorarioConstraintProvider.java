@@ -49,15 +49,14 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 limitarHorasContratadasPorDocente(constraintFactory),
                 limitarHorasPorDiaPorDocente(constraintFactory),
                 limitarCargaDiariaPorSeccion(constraintFactory),
-                //distribuirCursosSeccionPorDia(constraintFactory),
+                distribuirCursosSeccionPorDia(constraintFactory),
                 //evitarCrucesPeriodoAcademico(constraintFactory),
                 //evitarMultiplesCursosPorSeccionPorDia(constraintFactory),
                 //evitarSuperposicionPorDia(constraintFactory),
-                evitarCruceDisponibilidades(constraintFactory),
+                //evitarCruceDisponibilidades(constraintFactory),
                 //evitarConcentracionBloques(constraintFactory),
                 //distribuirAulas(constraintFactory),
-                cumplirHorasRequeridas(constraintFactory),
-                distribuirCursoEnDiferentesDias(constraintFactory),
+                //distribuirCursoEnDiferentesDias(constraintFactory),
 
                 // Restricciones SOFT - Preferencias
                 balancearHorasDocente(constraintFactory),
@@ -68,7 +67,8 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 incentivarDistribucionBloques(constraintFactory),
                 distribuirBloquesPorDia(constraintFactory),
                 maximizarUsoAulas(constraintFactory),
-                incentivarUsoCompartidoDeBloques(constraintFactory)
+                incentivarUsoCompartidoDeBloques(constraintFactory),
+                cumplirHorasRequeridas(constraintFactory),
         };
     }
 
@@ -203,7 +203,7 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                 .filter((a1, a2) -> {
                     Docente d1 = extraerDocente(a1);
                     Docente d2 = extraerDocente(a2);
-                    return d1 != null && d1.equals(d2); // Mismo docente
+                    return d1 != null && d1.equals(d2);
                 })
                 .penalize(HardSoftScore.ONE_HARD.multiply(HARD_SCORE_HIGH))
                 .asConstraint("Docente con horarios superpuestos");
@@ -331,7 +331,7 @@ public class HorarioConstraintProvider implements ConstraintProvider {
                         equal(this::extraerSeccion),
                         equal(a -> a.getBloqueHorario().getDiaSemana()))
                 .filter(this::sonCursosDiferentes)
-                .penalize(HardSoftScore.ONE_HARD.multiply(HARD_SCORE_LOW))
+                .penalize(HardSoftScore.ONE_SOFT.multiply(SOFT_SCORE_LOW))
                 .asConstraint("Evitar múltiples cursos por sección en el mismo día");
     }
 
@@ -387,18 +387,19 @@ public class HorarioConstraintProvider implements ConstraintProvider {
     private Constraint cumplirHorasRequeridas(ConstraintFactory factory) {
         return factory
                 .forEach(AsignacionHorario.class)
-                .groupBy(a -> a.getCursoSeccionDocente(),
+                .groupBy(AsignacionHorario::getCursoSeccionDocente,
                         ConstraintCollectors.sum(a -> calcularHorasBloque(a.getBloqueHorario())))
                 .filter((csd, horasAsignadas) -> {
                     Integer horasRequeridas = csd.getCurso().getHorasSemanales();
                     return horasRequeridas != null && horasAsignadas < horasRequeridas;
                 })
-                .penalize(HardSoftScore.ONE_HARD.multiply(HARD_SCORE_HIGH),
+
+                .penalize(HardSoftScore.ONE_SOFT.multiply(SOFT_SCORE_HIGH),
                         (csd, horasAsignadas) -> {
                             Integer horasRequeridas = csd.getCurso().getHorasSemanales();
                             return horasRequeridas - horasAsignadas;
                         })
-                .asConstraint("Cumplir horas semanales requeridas");
+                .asConstraint("Preferir cumplir horas semanales requeridas");
     }
 
     private Constraint distribuirCursoEnDiferentesDias(ConstraintFactory factory) {
