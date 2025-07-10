@@ -31,8 +31,9 @@ public class HorarioSolucion {
     @PlanningScore
     private HardSoftScore score;
 
-    //construcctor vacio
+    // Constructor por defecto requerido por OptaPlanner
     public HorarioSolucion() {
+        this.score = HardSoftScore.ZERO;
     }
 
     //constructor con todos los atributos

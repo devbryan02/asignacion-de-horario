@@ -15,10 +15,10 @@ public class AsignacionHorario {
 
     private CursoSeccionDocente cursoSeccionDocente;
 
-    @PlanningVariable(valueRangeProviderRefs = "aulaRange", nullable = true)
+    @PlanningVariable(valueRangeProviderRefs = "aulaRange", nullable = false)
     private Aula aula;
 
-    @PlanningVariable(valueRangeProviderRefs = "bloqueHorarioRange", nullable = true)
+    @PlanningVariable(valueRangeProviderRefs = "bloqueHorarioRange", nullable = false)
     private BloqueHorario bloqueHorario;
 
     // Constructor por defecto requerido por OptaPlanner

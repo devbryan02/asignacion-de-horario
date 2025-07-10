@@ -1,5 +1,6 @@
 package elp.edu.pe.horario.domain.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Seccion {
@@ -46,4 +47,18 @@ public class Seccion {
                 ", periodoAcademico=" + periodoAcademico +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Seccion seccion = (Seccion) o;
+        return Objects.equals(id, seccion.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }

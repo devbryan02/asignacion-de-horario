@@ -26,10 +26,31 @@ public class OptaPlannerConfig {
                 .withSolutionClass(HorarioSolucion.class)
                 .withEntityClasses(AsignacionHorario.class)
                 .withConstraintProviderClass(HorarioConstraintProvider.class)
-                .withTerminationSpentLimit(java.time.Duration.ofMinutes(2)) // Tiempo máximo de ejecución
+                .withTerminationConfig(new TerminationConfig()
+                        .withSpentLimit(Duration.ofMinutes(2))
+                        .withBestScoreLimit("0hard/*soft") // Termina si encuentra solución sin violaciones HARD
+                        .withUnimprovedSpentLimit(Duration.ofSeconds(30)) // Termina si no mejora en 30s
+                )
                 .withPhases(
-                        new ConstructionHeuristicPhaseConfig(),  // Fase de construcción inicial
-                        new LocalSearchPhaseConfig()// Fase de búsqueda local para optimizar
+                        // Fase 1: Construcción inicial más agresiva
+                        new ConstructionHeuristicPhaseConfig()
+                                .withConstructionHeuristicType(ConstructionHeuristicType.FIRST_FIT_DECREASING),
+
+                        // Fase 2: Búsqueda local con múltiples algoritmos
+                        new LocalSearchPhaseConfig()
+                                .withLocalSearchType(LocalSearchType.TABU_SEARCH)
+                                .withTerminationConfig(new TerminationConfig()
+                                        .withSpentLimit(Duration.ofMinutes(1))
+                                        .withUnimprovedSpentLimit(Duration.ofSeconds(20))
+                                ),
+
+                        // Fase 3: Búsqueda local alternativa si hay tiempo
+                        new LocalSearchPhaseConfig()
+                                .withLocalSearchType(LocalSearchType.LATE_ACCEPTANCE)
+                                .withTerminationConfig(new TerminationConfig()
+                                        .withSpentLimit(Duration.ofMinutes(1))
+                                        .withUnimprovedSpentLimit(Duration.ofSeconds(15))
+                                )
                 );
     }
 

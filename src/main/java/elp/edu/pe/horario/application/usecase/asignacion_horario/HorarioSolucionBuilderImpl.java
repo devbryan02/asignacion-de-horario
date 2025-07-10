@@ -4,11 +4,11 @@ import elp.edu.pe.horario.domain.model.*;
 import elp.edu.pe.horario.domain.repository.*;
 import elp.edu.pe.horario.domain.solver.HorarioSolucion;
 import elp.edu.pe.horario.domain.solver.HorarioSolucionBuilder;
+import elp.edu.pe.horario.infrastructure.persistence.entity.DocenteEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
 
-    private static final Logger log = LoggerFactory.getLogger(HorarioSolucionBuilderImpl.class);
     private static final int HORAS_POR_BLOQUE = 2;
     private static final double FACTOR_DISTRIBUCION_BLOQUES = 3.0;
 
@@ -32,45 +32,33 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
     @Transactional
     @Override
     public HorarioSolucion construirDesdeBaseDeDatos(UUID periodoId) {
-        log.info("Iniciando construcción de solución de horario para periodo: {}", periodoId);
 
         HorarioSolucion solucion = new HorarioSolucion();
 
-        // Limpiar asignaciones previas
         limpiarAsignacionesPrevias();
 
-        // Cargar datos desde la base de datos
         List<Aula> aulas = aulaRepository.findByPeriodoId(periodoId);
         List<BloqueHorario> bloques = bloqueHorarioRepository.findByPeriodoId(periodoId);
         List<CursoSeccionDocente> cursoSeccionDocentes = cursoSeccionDocenteRepository.findByPeriodoId(periodoId);
 
-        // Validar datos básicos
+        verificarAsignacionDeDocentes(periodoId);
+
         validarDatosBasicos(aulas, bloques, cursoSeccionDocentes);
-
-        // Cargar restricciones para docentes
         cargarRestriccionesParaDocentes(cursoSeccionDocentes);
-
-        // Generar asignaciones basadas en horas semanales
         List<AsignacionHorario> asignacionesIniciales = generarAsignacionesBasadasEnHoras(cursoSeccionDocentes);
-
-        // Validar recursos con el número real de asignaciones
         validarRecursosParaAsignaciones(aulas, bloques, asignacionesIniciales);
 
-        // Configurar la solución
         solucion.setAulaList(aulas);
         solucion.setBloqueHorarioList(bloques);
         solucion.setCursoSeccionDocentes(cursoSeccionDocentes);
         solucion.setAsignacionHorarioList(asignacionesIniciales);
 
-        log.info("Solución de horario construida exitosamente con {} asignaciones",
-                asignacionesIniciales.size());
 
         return solucion;
     }
 
     @Transactional
     void limpiarAsignacionesPrevias() {
-        log.debug("Limpiando asignaciones previas...");
         entityManager.clear();
         asignacionHorarioRepository.deleteAllInBatch();
         entityManager.flush();
@@ -93,87 +81,83 @@ public class HorarioSolucionBuilderImpl implements HorarioSolucionBuilder {
                                                  List<AsignacionHorario> asignaciones) {
         int totalAsignaciones = asignaciones.size();
         int bloquesNecesarios = (int) Math.ceil(totalAsignaciones / FACTOR_DISTRIBUCION_BLOQUES);
+        int aulasNecesarias = (int) Math.ceil((double) totalAsignaciones / bloques.size());
 
         if (bloques.size() < bloquesNecesarios) {
-            throw new IllegalStateException(
-                    String.format("Se necesitan al menos %d bloques para %d asignaciones. Actuales: %d",
-                            bloquesNecesarios, totalAsignaciones, bloques.size())
-            );
+            throw new IllegalStateException(String.format(
+                    "Se necesitan al menos %d bloques para %d asignaciones. Actuales: %d",
+                    bloquesNecesarios, totalAsignaciones, bloques.size()));
         }
 
-        int aulasNecesarias = (int) Math.ceil((double) totalAsignaciones / bloques.size());
         if (aulas.size() < aulasNecesarias) {
-            throw new IllegalStateException(
-                    String.format("Se necesitan al menos %d aulas para %d asignaciones. Actuales: %d",
-                            aulasNecesarias, totalAsignaciones, aulas.size())
-            );
+            throw new IllegalStateException(String.format(
+                    "Se necesitan al menos %d aulas para %d asignaciones. Actuales: %d",
+                    aulasNecesarias, totalAsignaciones, aulas.size()));
         }
-
-        log.info("Validación de recursos completada -> Aulas: {}, Bloques: {}, " +
-                        "Total Asignaciones: {}, Bloques mínimos: {}, Aulas mínimas: {}",
-                aulas.size(), bloques.size(), totalAsignaciones, bloquesNecesarios, aulasNecesarias);
     }
 
     private void cargarRestriccionesParaDocentes(List<CursoSeccionDocente> cursoSeccionDocentes) {
-        log.debug("Cargando restricciones para docentes...");
-
         Set<Docente> docentesUnicos = cursoSeccionDocentes.stream()
                 .map(CursoSeccionDocente::getDocente)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        // TODO: Optimizar con una sola query usando IDs
         for (Docente docente : docentesUnicos) {
             List<RestriccionDocente> restricciones =
                     restriccionDocenteRepository.findAllByDocenteId(docente.getId());
             docente.setRestricciones(restricciones);
-
-            log.debug("Docente {} tiene {} restricciones cargadas",
-                    docente.getNombre(), restricciones.size());
         }
-
-        log.info("Restricciones cargadas para {} docentes únicos", docentesUnicos.size());
     }
 
     private List<AsignacionHorario> generarAsignacionesBasadasEnHoras(List<CursoSeccionDocente> cursoSeccionDocentes) {
-        log.debug("Generando asignaciones basadas en horas semanales...");
-
         List<AsignacionHorario> asignaciones = new ArrayList<>();
-        int totalAsignacionesGeneradas = 0;
 
         for (CursoSeccionDocente csd : cursoSeccionDocentes) {
             Integer horasSemanales = csd.getCurso().getHorasSemanales();
-
-            // Validación y valor por defecto
             if (horasSemanales == null || horasSemanales <= 0) {
-                log.warn("Curso '{}' tiene horas semanales inválidas: {}. Se asignan {} horas por defecto.",
-                        csd.getCurso().getNombre(), horasSemanales, HORAS_POR_BLOQUE);
                 horasSemanales = HORAS_POR_BLOQUE;
             }
 
-            // Calcular bloques necesarios
             int bloquesNecesarios = (int) Math.ceil((double) horasSemanales / HORAS_POR_BLOQUE);
 
-            log.debug("Curso: '{}' ({} horas semanales) generará {} asignaciones",
-                    csd.getCurso().getNombre(), horasSemanales, bloquesNecesarios);
-
-            // Crear asignaciones para cada bloque necesario
             for (int i = 0; i < bloquesNecesarios; i++) {
-                AsignacionHorario asignacion = new AsignacionHorario(
+                asignaciones.add(new AsignacionHorario(
                         UUID.randomUUID(),
                         csd,
                         null,
                         null
-                );
-
-                asignaciones.add(asignacion);
-                totalAsignacionesGeneradas++;
+                ));
             }
         }
 
-        log.info("Generadas {} asignaciones en total para {} cursos-sección-docente",
-                totalAsignacionesGeneradas, cursoSeccionDocentes.size());
-
         return asignaciones;
     }
+
+    private void verificarAsignacionDeDocentes(UUID periodoId) {
+        // Obtenemos todos los IDs de docentes
+        List<UUID> idsTodosLosDocentes = entityManager.createQuery(
+                "SELECT d.id FROM DocenteEntity d", UUID.class).getResultList();
+
+        // Obtenemos los IDs de docentes que están en CursoSeccionDocente
+        List<UUID> idsDocentesAsignados = entityManager.createQuery(
+                        "SELECT DISTINCT csd.docente.id FROM CursoSeccionDocenteEntity csd " +
+                                "WHERE csd.seccion.periodo.id = :periodoId", UUID.class)
+                .setParameter("periodoId", periodoId)
+                .getResultList();
+
+        Set<UUID> asignadosSet = new HashSet<>(idsDocentesAsignados);
+
+        // Listamos los docentes NO asignados
+        List<DocenteEntity> noAsignados = entityManager.createQuery(
+                        "SELECT d FROM DocenteEntity d WHERE d.id NOT IN :idsAsignados", DocenteEntity.class)
+                .setParameter("idsAsignados", asignadosSet)
+                .getResultList();
+
+        log.info("🧑‍🏫 Total de docentes registrados: {}", idsTodosLosDocentes.size());
+        log.info("✅ Docentes asignados a curso-sección: {}", asignadosSet.size());
+        log.info("❌ Docentes NO asignados:");
+        noAsignados.forEach(d -> log.info("- {} ", d.getNombre()));
+    }
+
+
 }

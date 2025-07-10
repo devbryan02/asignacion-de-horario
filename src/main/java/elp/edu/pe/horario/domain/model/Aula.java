@@ -2,6 +2,7 @@ package elp.edu.pe.horario.domain.model;
 
 import elp.edu.pe.horario.domain.enums.TipoAula;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Aula {
@@ -59,4 +60,20 @@ public class Aula {
                 ", tipo=" + tipo +
                 '}';
     }
+
+    // metodo equals y hashCode es necesario para comparar objetos Aula
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Aula aula = (Aula) o;
+        return Objects.equals(id, aula.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+
 }

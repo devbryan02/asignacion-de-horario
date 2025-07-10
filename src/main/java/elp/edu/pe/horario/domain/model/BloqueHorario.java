@@ -4,6 +4,7 @@ import elp.edu.pe.horario.domain.enums.DiaSemana;
 import elp.edu.pe.horario.domain.enums.Turno;
 
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.UUID;
 
 public class BloqueHorario {
@@ -60,5 +61,20 @@ public class BloqueHorario {
 
     public void setTurno(Turno turno) {
         this.turno = turno;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BloqueHorario that = (BloqueHorario) o;
+        return diaSemana == that.diaSemana &&
+                horaInicio.equals(that.horaInicio) &&
+                horaFin.equals(that.horaFin);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(diaSemana, horaInicio, horaFin);
     }
 }
